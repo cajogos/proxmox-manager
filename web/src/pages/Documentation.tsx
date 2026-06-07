@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Markdown, { type Components } from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { getDocs, getDocFile, type DocEntry } from '@/api/client';
 import { cn } from '@/lib/utils';
 
@@ -104,7 +105,7 @@ export default function Documentation() {
         {contentLoading ? (
           <p className="text-muted-foreground">Loading…</p>
         ) : (
-          <Markdown components={mdComponents}>{content}</Markdown>
+          <Markdown remarkPlugins={[remarkGfm]} components={mdComponents}>{content}</Markdown>
         )}
       </div>
     </div>
