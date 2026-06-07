@@ -101,13 +101,13 @@ See [docs/COMMANDS.md](docs/COMMANDS.md) for the full command reference.
 | Phase | Status | Description |
 |---|---|---|
 | [Phase 1](docs/plan/phase_1.md) | ✅ Complete | Core infrastructure + VM listing |
-| [Phase 2](docs/plan/phase_2.md) | 🔲 Pending | Full VM lifecycle management |
-| [Phase 3](docs/plan/phase_3.md) | 🔲 Pending | LXC container management |
-| [Phase 4](docs/plan/phase_4.md) | 🔲 Pending | Node management |
-| [Phase 5](docs/plan/phase_5.md) | 🔲 Pending | Storage management |
-| [Phase 6](docs/plan/phase_6.md) | 🔲 Pending | Full API coverage |
-| [Phase 7](docs/plan/phase_7.md) | 🔲 Pending | Web UI (React + Vite + API server) |
-| [Phase 8](docs/plan/phase_8.md) | 🔲 Pending | CLI aesthetics (colors, spinners, compact tables, human-readable values) |
+| [Phase 2](docs/plan/phase_2.md) | 🔲 Pending | CLI aesthetics (colors, spinners, compact tables, human-readable values) |
+| [Phase 3](docs/plan/phase_3.md) | 🔲 Pending | Full VM lifecycle management |
+| [Phase 4](docs/plan/phase_4.md) | 🔲 Pending | LXC container management |
+| [Phase 5](docs/plan/phase_5.md) | 🔲 Pending | Node management |
+| [Phase 6](docs/plan/phase_6.md) | 🔲 Pending | Storage management |
+| [Phase 7](docs/plan/phase_7.md) | 🔲 Pending | Full API coverage |
+| [Phase 8](docs/plan/phase_8.md) | 🔲 Pending | Web UI (React + Vite + API server) |
 
 ---
 

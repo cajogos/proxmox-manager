@@ -1,39 +1,42 @@
-# Phase 4: Node Management
+# Phase 4: LXC Container Management
 
 ## Requirements
 
-- Implement node-level management commands
-- Node operations are high-risk — shutdown/reboot require double-confirmation
+- Implement full lifecycle management for LXC containers
+- Mirror the VM command structure where applicable
 - Commands to implement:
 
 | Command | Description |
 |---|---|
-| `node list` | List all nodes with status, CPU, memory |
-| `node status <node>` | Detailed node status and resource usage |
-| `node shutdown <node>` | Shutdown a node (DANGEROUS) |
-| `node reboot <node>` | Reboot a node (DANGEROUS) |
-| `node services list <node>` | List Proxmox services on a node |
-| `node services restart <node> <service>` | Restart a Proxmox service |
-| `node tasks <node>` | Show recent tasks on a node |
-| `node tasks log <node> <upid>` | Show log for a specific task |
-| `node version <node>` | Show Proxmox version on a node |
+| `lxc list` | List all containers across nodes |
+| `lxc status <ctid>` | Show detailed container status |
+| `lxc start <ctid>` | Start a stopped container |
+| `lxc stop <ctid>` | Hard stop a running container |
+| `lxc shutdown <ctid>` | Graceful shutdown |
+| `lxc reboot <ctid>` | Reboot a container |
+| `lxc suspend <ctid>` | Suspend a container |
+| `lxc resume <ctid>` | Resume a container |
+| `lxc snapshot create <ctid> <name>` | Create a snapshot |
+| `lxc snapshot list <ctid>` | List snapshots |
+| `lxc snapshot delete <ctid> <name>` | Delete a snapshot |
+| `lxc snapshot rollback <ctid> <name>` | Rollback to snapshot |
+| `lxc delete <ctid>` | Delete a container |
+| `lxc config <ctid>` | Show container configuration |
+| `lxc exec <ctid> <command>` | Execute a command inside the container |
 
-- `node shutdown` and `node reboot` must:
-  - Check protected nodes list
-  - Show all running VMs/containers that will be affected
-  - Require explicit typed confirmation: "I understand this will affect N VMs"
-- Protected nodes list from `config.json` `safeguards.protectedNodes`
+- `lxc exec` must require explicit `--yes` or confirmation — never run silently
+- Protected containers list applies from `config.json` `safeguards.protectedContainers`
 
 ## Implementation
 
-_To be detailed at the start of Phase 4._
+_To be detailed at the start of Phase 3._
 
 ## Checklist
 
-- [ ] `src/api/endpoints/node.ts` — all node API calls
-- [ ] `src/cli/commands/node/` — all commands
-- [ ] `node shutdown`/`reboot` show affected VMs before confirming
-- [ ] Protected nodes respected
+- [ ] `src/api/endpoints/lxc.ts` — all LXC API calls
+- [ ] `src/cli/commands/lxc/` — all commands
+- [ ] `lxc exec` requires confirmation
+- [ ] Protected containers respected
 - [ ] All actions in audit log
 - [ ] `pnpm build` + `pnpm typecheck` pass
-- [ ] README.md updated with Phase 4 tutorial
+- [ ] README.md updated with Phase 3 tutorial

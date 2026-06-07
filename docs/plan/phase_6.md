@@ -1,43 +1,34 @@
-# Phase 6: Full API Coverage
+# Phase 6: Storage Management
 
 ## Requirements
 
-- Cover remaining Proxmox API surface areas not handled in phases 1–5
-- This phase is defined incrementally — scoped at the start of each sub-phase
+- Implement storage pool inspection and management
+- Commands to implement:
 
-### Planned Sub-phases
-
-| Sub-phase | Area |
+| Command | Description |
 |---|---|
-| 6a | Cluster management (cluster status, HA, migrations) |
-| 6b | Network configuration (bridges, bonds, VLANs per node) |
-| 6c | Firewall rules (datacenter and per-VM/node) |
-| 6d | User and permission management (users, groups, roles, API tokens) |
-| 6e | Certificate management (ACME, custom certs) |
-| 6f | Backup jobs (scheduled backups via vzdump) |
-| 6g | Replication jobs |
-| 6h | SDN (Software Defined Networking) |
+| `storage list` | List all storage pools across nodes |
+| `storage status <storage>` | Detailed storage pool status and usage |
+| `storage content list <storage>` | List contents (ISOs, templates, disk images) |
+| `storage content upload <storage> <file>` | Upload an ISO or template |
+| `storage content delete <storage> <volid>` | Delete a volume |
+| `storage backup list` | List all backup files |
+| `storage backup delete <volid>` | Delete a backup |
 
-### General Requirements (all sub-phases)
-
-- All write/destructive operations pass through the safeguard pipeline
-- All actions logged to audit log
-- `--format table|json|csv` supported on all listing commands
-- Protected resource lists respected
+- Deleting volumes/backups is irreversible — always require confirmation
+- Upload shows progress indication
+- `--node <name>` flag to scope to a specific node
 
 ## Implementation
 
-_To be detailed at the start of each sub-phase._
+_To be detailed at the start of Phase 5._
 
 ## Checklist
 
-- [ ] 6a — Cluster management
-- [ ] 6b — Network configuration
-- [ ] 6c — Firewall rules
-- [ ] 6d — User and permission management
-- [ ] 6e — Certificate management
-- [ ] 6f — Backup jobs
-- [ ] 6g — Replication jobs
-- [ ] 6h — SDN
-- [ ] Full API surface audit (compare against Proxmox API docs)
-- [ ] README.md updated with Phase 6 capabilities
+- [ ] `src/api/endpoints/storage.ts` — all storage API calls
+- [ ] `src/cli/commands/storage/` — all commands
+- [ ] Delete operations always confirm
+- [ ] Upload shows progress
+- [ ] All actions in audit log
+- [ ] `pnpm build` + `pnpm typecheck` pass
+- [ ] README.md updated with Phase 5 tutorial

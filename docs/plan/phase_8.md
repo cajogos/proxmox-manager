@@ -1,87 +1,72 @@
-# Phase 8: CLI Aesthetics
-
-> **Recommended order:** Complete before Phase 2 so every new command inherits the patterns.
+# Phase 8: Web UI
 
 ## Requirements
 
-### Status colorization
-- `running` → `chalk.green`
-- `stopped` → `chalk.red`
-- `suspended` → `chalk.yellow`
-- Any other status → `chalk.gray`
-- Applied at the service layer so both table and JSON/CSV strip it correctly via the existing `stripAnsi` path
+- Add a React + Vite web frontend in `web/` alongside the existing CLI `src/`
+- Add an Express/Fastify API server in `src/server/` that exposes Proxmox operations as REST endpoints
+  - Reuses the existing `ProxmoxClient`, config loader, audit logger, and safeguard pipeline
+  - All write operations pass through the same safeguard pipeline as the CLI
+  - API server reads `config.json` from the same search paths as the CLI
+- The web frontend communicates only with the local API server — Proxmox credentials never reach the browser
+- Authentication between the browser and the API server (at minimum: a shared secret or session token configured in `config.json`)
+- Web UI must implement at minimum everything exposed by Phase 1–6 CLI commands
+- Every action taken via the Web UI is written to the audit log identically to CLI actions (with `source: "web"` in the entry)
+- The API server and Web UI should be startable with a single command
 
-### Human-readable values
-- Memory: raw MB → `4 096 MB` shown as `4.0 GB` (or `512 MB` left as MB below 1 024)
-- Uptime seconds (Phase 2+): formatted as `3d 14h 22m`
-- Disk sizes in GB/TB wherever exposed
+### Suggested sub-phases
 
-### Compact table layout
-- Remove per-row horizontal separators (currently every row has `├──┼──┤` lines)
-- Keep top/bottom border and header separator only
-- Achieved via `cli-table3` `compact: true` option
-
-### Column alignment
-- Numeric columns (VMID, CPUs, Memory) right-aligned
-- String columns left-aligned (default)
-
-### Summary line
-- Printed below every listing table in `chalk.gray`
-- Format: `8 VMs — 7 running · 1 stopped` (counts derived from the data, not a separate API call)
-- Omitted for `--format json` and `--format csv`
-
-### Template / boolean columns
-- `Yes` → `chalk.dim('template')`, `No` → `-` (or blank)
-- Reduces noise in the common case where nothing is a template
-
-### Consistent message palette
-All non-data output uses a fixed palette — applied in CLI command wrappers and error handlers:
-
-| Intent | Style |
+| Sub-phase | Scope |
 |---|---|
-| Success | `chalk.green('✓')` prefix |
-| Error | `chalk.red('✗')` prefix |
-| Warning | `chalk.yellow('!')` prefix |
-| Dry-run notice | `chalk.cyan('[dry-run]')` prefix |
-| Info / dim secondary text | `chalk.gray` |
+| 7a | API server scaffold (Express/Fastify, auth middleware, health endpoint) |
+| 7b | VM endpoints wired to existing API client + safeguards |
+| 7c | React + Vite scaffold in `web/`, global layout, connection to API server |
+| 7d | VM list and status pages |
+| 7e | VM lifecycle actions (start, stop, shutdown, reboot, snapshots) |
+| 7f | LXC, Node, Storage pages |
+| 7g | Audit log viewer page |
+| 7h | Settings/profile management page |
 
-### Spinner for API calls
-- Show an `ora` spinner while waiting for any Proxmox API response
-- Spinner stops (and is cleared) before output is printed
-- Disabled automatically when stdout is not a TTY (`ora` handles this)
+### Folder structure (proposed)
 
-### `--no-color` / TTY awareness
-- chalk already respects `NO_COLOR` and non-TTY stdout — no extra work needed
-- Verify JSON/CSV paths produce clean output (already handled by `stripAnsi`)
+```
+proxmox-manager/
+├── src/                  # Existing CLI source
+│   └── server/           # New: Express/Fastify API server
+│       ├── index.ts      # Server entry point
+│       ├── middleware/   # Auth, error handling, audit
+│       └── routes/       # Per-resource route handlers
+├── web/                  # New: React + Vite frontend
+│   ├── index.html
+│   ├── vite.config.ts
+│   ├── package.json      # Separate package.json for web deps
+│   └── src/
+│       ├── main.tsx
+│       ├── App.tsx
+│       ├── components/
+│       ├── pages/
+│       └── api/          # Typed fetch wrappers for the API server
+└── dist/                 # CLI output (existing)
+└── dist-web/             # Web build output
+```
 
-## New dependency
+## Implementation
 
-| Package | Purpose |
-|---|---|
-| `ora` | Elegant terminal spinner |
-
-## Files to change
-
-| File | Change |
-|---|---|
-| `src/output/formatter.ts` | Compact table, column alignment, summary line, boolean rendering |
-| `src/output/colors.ts` | **New** — `statusColor(status)`, `successMsg()`, `errorMsg()`, `warnMsg()`, `dryRunMsg()` helpers |
-| `src/output/humanize.ts` | **New** — `humanMB(mb)`, `humanSeconds(s)`, `humanBytes(b)` |
-| `src/output/spinner.ts` | **New** — thin `ora` wrapper: `startSpinner(text)` → returns `{ stop() }` |
-| `src/cli/commands/vm/list.ts` | Use spinner; pass status through `statusColor` before handing to formatter |
-| Any future command | Follow same pattern: spinner → service call → stop spinner → format |
+_To be detailed at the start of Phase 7._
 
 ## Checklist
 
-- [ ] `ora` installed
-- [ ] `src/output/colors.ts` — status and message palette helpers
-- [ ] `src/output/humanize.ts` — MB/bytes/seconds formatters
-- [ ] `src/output/spinner.ts` — ora wrapper
-- [ ] `src/output/formatter.ts` — compact layout, right-aligned numeric columns, summary line, boolean rendering
-- [ ] `vm list` — spinner active during API call, status colored, memory humanized, template column compact
-- [ ] JSON output clean (no ANSI in any field)
-- [ ] CSV output clean
-- [ ] `--no-color` verified (run with `NO_COLOR=1 ./pm vm list`)
-- [ ] Non-TTY verified (run `./pm vm list | cat` — no spinner, no ANSI)
-- [ ] `pnpm build` + `pnpm typecheck` pass
-- [ ] README.md updated with Phase 8 screenshot/example
+- [ ] API server scaffold with auth middleware
+- [ ] VM REST endpoints (GET /api/vms, POST /api/vms/:id/start, etc.)
+- [ ] Safeguard pipeline wired into API server routes
+- [ ] Audit log entries include `source: "web"`
+- [ ] React + Vite scaffold in `web/`
+- [ ] Global layout with navigation
+- [ ] VM list page
+- [ ] VM detail / action page
+- [ ] LXC list and action page
+- [ ] Node list and status page
+- [ ] Storage list page
+- [ ] Audit log viewer page
+- [ ] Single start command (`pnpm run web` or similar)
+- [ ] `pnpm build` compiles both CLI and Web UI
+- [ ] README.md and docs/COMMANDS.md updated with Phase 7 tutorial

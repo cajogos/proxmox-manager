@@ -1,34 +1,39 @@
-# Phase 5: Storage Management
+# Phase 5: Node Management
 
 ## Requirements
 
-- Implement storage pool inspection and management
+- Implement node-level management commands
+- Node operations are high-risk — shutdown/reboot require double-confirmation
 - Commands to implement:
 
 | Command | Description |
 |---|---|
-| `storage list` | List all storage pools across nodes |
-| `storage status <storage>` | Detailed storage pool status and usage |
-| `storage content list <storage>` | List contents (ISOs, templates, disk images) |
-| `storage content upload <storage> <file>` | Upload an ISO or template |
-| `storage content delete <storage> <volid>` | Delete a volume |
-| `storage backup list` | List all backup files |
-| `storage backup delete <volid>` | Delete a backup |
+| `node list` | List all nodes with status, CPU, memory |
+| `node status <node>` | Detailed node status and resource usage |
+| `node shutdown <node>` | Shutdown a node (DANGEROUS) |
+| `node reboot <node>` | Reboot a node (DANGEROUS) |
+| `node services list <node>` | List Proxmox services on a node |
+| `node services restart <node> <service>` | Restart a Proxmox service |
+| `node tasks <node>` | Show recent tasks on a node |
+| `node tasks log <node> <upid>` | Show log for a specific task |
+| `node version <node>` | Show Proxmox version on a node |
 
-- Deleting volumes/backups is irreversible — always require confirmation
-- Upload shows progress indication
-- `--node <name>` flag to scope to a specific node
+- `node shutdown` and `node reboot` must:
+  - Check protected nodes list
+  - Show all running VMs/containers that will be affected
+  - Require explicit typed confirmation: "I understand this will affect N VMs"
+- Protected nodes list from `config.json` `safeguards.protectedNodes`
 
 ## Implementation
 
-_To be detailed at the start of Phase 5._
+_To be detailed at the start of Phase 4._
 
 ## Checklist
 
-- [ ] `src/api/endpoints/storage.ts` — all storage API calls
-- [ ] `src/cli/commands/storage/` — all commands
-- [ ] Delete operations always confirm
-- [ ] Upload shows progress
+- [ ] `src/api/endpoints/node.ts` — all node API calls
+- [ ] `src/cli/commands/node/` — all commands
+- [ ] `node shutdown`/`reboot` show affected VMs before confirming
+- [ ] Protected nodes respected
 - [ ] All actions in audit log
 - [ ] `pnpm build` + `pnpm typecheck` pass
-- [ ] README.md updated with Phase 5 tutorial
+- [ ] README.md updated with Phase 4 tutorial
