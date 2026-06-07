@@ -14,6 +14,7 @@ export interface AuditEntry {
   dryRun: boolean;
   result: 'success' | 'failed' | 'cancelled' | 'dry-run';
   error: string | null;
+  source?: 'cli' | 'web';
 }
 
 const DEFAULT_LOG_PATH = resolve(homedir(), '.proxmox-manager', 'audit.log');

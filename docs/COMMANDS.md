@@ -16,11 +16,18 @@ Available on every command:
 ## Running Commands
 
 ```bash
-# Dev mode (no build required)
+# CLI — dev mode (no build required)
+pnpm cli <command> [options]
+# or directly:
 ./node_modules/.bin/tsx src/index.ts <command> [options]
 
-# After building
+# CLI — after building
 node dist/index.js <command> [options]
+
+# Web server — dev mode
+pnpm web
+# Web server listens on http://localhost:3000 by default
+# Override port: SERVER_PORT=8080 pnpm web
 ```
 
 ---
@@ -74,5 +81,31 @@ cat ~/.proxmox-manager/audit.log | tail -5
 ```
 
 ```json
-{"timestamp":"2026-06-07T13:00:00.000Z","profile":"homelab","command":"vm list","resource":{"type":"vm"},"dryRun":false,"result":"success","error":null}
+{"timestamp":"2026-06-07T13:00:00.000Z","profile":"homelab","command":"vm list","resource":{"type":"vm"},"dryRun":false,"result":"success","error":null,"source":"cli"}
+```
+
+The `source` field is `"cli"` for terminal commands and `"web"` for requests via the API server.
+
+---
+
+## Web Server Endpoints
+
+The web server (`pnpm web`) exposes the same operations as REST endpoints.
+
+### `GET /health`
+
+```bash
+curl http://localhost:3000/health
+# { "ok": true, "version": "0.1.0" }
+```
+
+### `GET /api/vms`
+
+```bash
+curl http://localhost:3000/api/vms
+curl "http://localhost:3000/api/vms?profile=homelab"
+```
+
+```json
+{ "ok": true, "data": [] }
 ```

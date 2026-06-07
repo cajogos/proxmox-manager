@@ -8,8 +8,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "tsx src/index.ts",
-    "dev": "tsx src/index.ts",
+    "cli": "tsx src/index.ts",
+    "web": "tsx src/server/index.ts",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [
@@ -25,10 +25,12 @@
     "chalk": "^4.1.2",
     "cli-table3": "^0.6.5",
     "commander": "^15.0.0",
+    "express": "^5.2.1",
     "prompts": "^2.4.2",
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@types/express": "^5.0.6",
     "@types/node": "^25.9.2",
     "@types/prompts": "^2.4.9",
     "tsx": "^4.22.4",
