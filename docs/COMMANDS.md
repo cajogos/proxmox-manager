@@ -16,10 +16,8 @@ Available on every command:
 ## Running Commands
 
 ```bash
-# CLI — dev mode (no build required)
-pnpm cli <command> [options]
-# or directly:
-./node_modules/.bin/tsx src/index.ts <command> [options]
+# CLI — dev mode (preferred — no pnpm noise)
+./pm <command> [options]
 
 # CLI — after building
 node dist/index.js <command> [options]
@@ -39,7 +37,7 @@ pnpm web
 List all VMs across all nodes.
 
 ```bash
-node dist/index.js vm list
+./pm vm list
 ```
 
 ```
@@ -55,19 +53,19 @@ node dist/index.js vm list
 **JSON output:**
 
 ```bash
-node dist/index.js vm list --format json
+./pm vm list --format json
 ```
 
 **CSV output:**
 
 ```bash
-node dist/index.js vm list --format csv
+./pm vm list --format csv
 ```
 
 **Specific profile:**
 
 ```bash
-node dist/index.js --profile homelab vm list
+./pm --profile homelab vm list
 ```
 
 ---

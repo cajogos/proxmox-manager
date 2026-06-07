@@ -85,10 +85,10 @@ pnpm build
 ## Usage
 
 ```bash
-# Dev mode (no build required)
-./node_modules/.bin/tsx src/index.ts <command> [options]
+# Dev mode (no build required) — preferred, no pnpm noise
+./pm <command> [options]
 
-# After building (recommended)
+# After building
 node dist/index.js <command> [options]
 ```
 

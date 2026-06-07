@@ -13,11 +13,12 @@ pnpm web            # run web server via tsx (dev mode)
 
 Run the CLI directly:
 ```bash
+./pm <command> [options]                             # dev (preferred — no pnpm noise)
 node dist/index.js <command> [options]               # compiled
-./node_modules/.bin/tsx src/index.ts <command>       # dev
+./node_modules/.bin/tsx src/index.ts <command>       # dev (explicit)
 ```
 
-> `pnpm cli -- <args>` does not work in pnpm v11 — it forwards `--` literally to tsx. Use `node dist/index.js` or `tsx src/index.ts` directly.
+> `pnpm cli` always echoes the command to stderr — use `./pm` instead.
 
 There are no tests yet. Type-check is the primary correctness gate.
 
