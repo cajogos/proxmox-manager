@@ -57,7 +57,7 @@ export default function LXC() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {containers.map(ct => (
+          {[...containers].sort((a, b) => a.vmid - b.vmid).map(ct => (
             <TableRow key={ct.vmid}>
               <TableCell className="font-mono">{ct.vmid}</TableCell>
               <TableCell>{ct.name ?? '-'}</TableCell>

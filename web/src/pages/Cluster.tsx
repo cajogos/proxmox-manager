@@ -60,7 +60,7 @@ export default function Cluster() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {nodes.map(n => (
+            {[...nodes].sort((a, b) => a.name.localeCompare(b.name)).map(n => (
               <TableRow key={n.id}>
                 <TableCell className="font-mono">{n.name}</TableCell>
                 <TableCell>{n.online ? <Badge variant="success">online</Badge> : <Badge variant="destructive">offline</Badge>}</TableCell>
@@ -88,7 +88,7 @@ export default function Cluster() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {resources.map(r => (
+            {[...resources].sort((a, b) => (a.vmid ?? 0) - (b.vmid ?? 0) || a.id.localeCompare(b.id)).map(r => (
               <TableRow key={r.id}>
                 <TableCell className="font-mono">{r.vmid ?? r.id}</TableCell>
                 <TableCell><Badge variant="outline">{r.type}</Badge></TableCell>

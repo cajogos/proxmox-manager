@@ -57,7 +57,7 @@ export default function VMs() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {vms.map(vm => (
+          {[...vms].sort((a, b) => a.vmid - b.vmid).map(vm => (
             <TableRow key={vm.vmid}>
               <TableCell className="font-mono">{vm.vmid}</TableCell>
               <TableCell>{vm.name ?? '-'}</TableCell>

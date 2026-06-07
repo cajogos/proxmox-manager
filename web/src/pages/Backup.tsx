@@ -52,7 +52,7 @@ export default function Backup() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {jobs.map(job => (
+            {[...jobs].sort((a, b) => a.id.localeCompare(b.id)).map(job => (
               <TableRow key={job.id}>
                 <TableCell className="font-mono text-sm">{job.id}</TableCell>
                 <TableCell className="font-mono">{job.schedule ?? '-'}</TableCell>

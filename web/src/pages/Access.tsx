@@ -67,7 +67,7 @@ export default function Access() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.map(u => (
+            {[...users].sort((a, b) => a.userid.localeCompare(b.userid)).map(u => (
               <TableRow key={u.userid}>
                 <TableCell className="font-mono">{u.userid}</TableCell>
                 <TableCell>{u.comment ?? '-'}</TableCell>
@@ -90,7 +90,7 @@ export default function Access() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {groups.map(g => (
+            {[...groups].sort((a, b) => a.groupid.localeCompare(b.groupid)).map(g => (
               <TableRow key={g.groupid}>
                 <TableCell className="font-mono">{g.groupid}</TableCell>
                 <TableCell>{g.comment ?? '-'}</TableCell>
@@ -111,7 +111,7 @@ export default function Access() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {roles.map(r => (
+            {[...roles].sort((a, b) => a.roleid.localeCompare(b.roleid)).map(r => (
               <TableRow key={r.roleid}>
                 <TableCell className="font-mono">{r.roleid}</TableCell>
                 <TableCell>{r.special ? <Badge variant="secondary">built-in</Badge> : '-'}</TableCell>
