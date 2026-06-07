@@ -107,6 +107,7 @@ See [docs/COMMANDS.md](docs/COMMANDS.md) for the full command reference.
 | [Phase 5](docs/plan/phase_5.md) | 🔲 Pending | Storage management |
 | [Phase 6](docs/plan/phase_6.md) | 🔲 Pending | Full API coverage |
 | [Phase 7](docs/plan/phase_7.md) | 🔲 Pending | Web UI (React + Vite + API server) |
+| [Phase 8](docs/plan/phase_8.md) | 🔲 Pending | CLI aesthetics (colors, spinners, compact tables, human-readable values) |
 
 ---
 
