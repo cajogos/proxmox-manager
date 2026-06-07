@@ -3,6 +3,10 @@ import { registerVMCommands } from './commands/vm/index';
 import { registerLXCCommands } from './commands/lxc/index';
 import { registerNodeCommands } from './commands/node/index';
 import { registerStorageCommands } from './commands/storage/index';
+import { registerClusterCommands } from './commands/cluster/index';
+import { registerNetworkCommands } from './commands/network/index';
+import { registerAccessCommands } from './commands/access/index';
+import { registerBackupCommands } from './commands/backup/index';
 
 export function createProgram(): Command {
   const program = new Command();
@@ -20,6 +24,10 @@ export function createProgram(): Command {
   registerLXCCommands(program);
   registerNodeCommands(program);
   registerStorageCommands(program);
+  registerClusterCommands(program);
+  registerNetworkCommands(program);
+  registerAccessCommands(program);
+  registerBackupCommands(program);
 
   program.action(() => {
     program.outputHelp();

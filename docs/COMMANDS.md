@@ -385,3 +385,159 @@ curl "http://localhost:3000/api/vms?profile=homelab"
 ```json
 { "ok": true, "data": [] }
 ```
+
+---
+
+## Phase 7 — Cluster, Network, Access, Backup Jobs
+
+### `cluster status`
+
+Show the status of all nodes in the Proxmox cluster.
+
+```bash
+./pm cluster status
+```
+
+```
+┌──────┬──────┬────────┬─────────────────┬──────────┬───────┐
+│ Name │ Type │ ID     │ IP              │ Online   │ Nodes │
+├──────┼──────┼────────┼─────────────────┼──────────┼───────┤
+│ pve  │ node │ node/1 │ 192.168.1.180   │ online   │ -     │
+└──────┴──────┴────────┴─────────────────┴──────────┴───────┘
+1 cluster entry
+```
+
+### `cluster resources`
+
+List all cluster resources. Optionally filter by type.
+
+```bash
+./pm cluster resources
+./pm cluster resources --type vm
+./pm cluster resources --type node
+```
+
+### `cluster ha`
+
+Show HA status for all managed resources.
+
+```bash
+./pm cluster ha
+```
+
+---
+
+### `network list <node>`
+
+List network interfaces on a node.
+
+```bash
+./pm network list pve
+```
+
+```
+┌────────┬────────┬────────┬──────────────────┬────────┬───────────┬──────────────┐
+│ Iface  │ Type   │ Method │ Address          │ Active │ Autostart │ Bridge Ports │
+├────────┼────────┼────────┼──────────────────┼────────┼───────────┼──────────────┤
+│ eno1   │ eth    │ manual │ -                │ yes    │ yes       │ -            │
+│ vmbr0  │ bridge │ static │ 192.168.1.180/24 │ yes    │ yes       │ eno1         │
+└────────┴────────┴────────┴──────────────────┴────────┴───────────┴──────────────┘
+2 interface(s)
+```
+
+### `network show <node> <iface>`
+
+Show full detail for a single interface.
+
+```bash
+./pm network show pve vmbr0
+```
+
+---
+
+### `access user list`
+
+List all Proxmox users.
+
+```bash
+./pm access user list
+```
+
+```
+┌──────────────┬──────┬───────────────────┬─────────┬────────┬─────────┐
+│ UserID       │ Name │ Email             │ Enabled │ Groups │ Comment │
+├──────────────┼──────┼───────────────────┼─────────┼────────┼─────────┤
+│ root@pam     │ -    │ -                 │ yes     │ -      │ -       │
+│ admin@pam    │ -    │ admin@example.com │ yes     │ admins │ -       │
+└──────────────┴──────┴───────────────────┴─────────┴────────┴─────────┘
+2 user(s)
+```
+
+### `access user show <userid>`
+
+Show detail for a single user.
+
+```bash
+./pm access user show root@pam
+```
+
+### `access group list`
+
+List all groups.
+
+```bash
+./pm access group list
+```
+
+### `access role list`
+
+List all roles.
+
+```bash
+./pm access role list
+```
+
+---
+
+### `backup list`
+
+List all scheduled backup jobs.
+
+```bash
+./pm backup list
+```
+
+```
+┌──────────────────────┬─────────┬─────────────┬─────────┬──────┬───────┬──────────┬──────────┐
+│ ID                   │ Enabled │ Schedule    │ Storage │ Node │ VMIDs │ Mode     │ Compress │
+├──────────────────────┼─────────┼─────────────┼─────────┼──────┼───────┼──────────┼──────────┤
+│ backup-nightly       │ yes     │ 0 2 * * *   │ backups │ all  │ all   │ snapshot │ zstd     │
+└──────────────────────┴─────────┴─────────────┴─────────┴──────┴───────┴──────────┴──────────┘
+1 backup job(s)
+```
+
+### `backup show <id>`
+
+Show detail for a single backup job.
+
+```bash
+./pm backup show backup-nightly
+```
+
+### `backup create`
+
+Create a new scheduled backup job. Requires `--storage`. Prompts for confirmation.
+
+```bash
+./pm backup create --storage backups --schedule "0 3 * * *" --mode snapshot --compress zstd
+./pm backup create --storage backups --node pve --vmid 100,101 --yes
+```
+
+### `backup delete <id>`
+
+Delete a backup job. Prompts for confirmation.
+
+```bash
+./pm backup delete backup-nightly
+./pm backup delete backup-nightly --yes
+```

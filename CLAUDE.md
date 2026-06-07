@@ -38,10 +38,18 @@ There are no tests yet. Type-check is the primary correctness gate.
 | API endpoints | `src/api/endpoints/lxc.ts` | LXC API calls — same set as VM plus `execLXC()` (SSH via child_process) |
 | API endpoints | `src/api/endpoints/node.ts` | Node API calls — status, version, shutdown/reboot, services, tasks; reuses `getNodes()` from vm.ts |
 | API endpoints | `src/api/endpoints/storage.ts` | Storage API calls — list pools (dedup by node), content, upload, delete; `listAllBackups()` |
+| API endpoints | `src/api/endpoints/cluster.ts` | Cluster API calls — status entries, resources (with optional type filter), HA status |
+| API endpoints | `src/api/endpoints/network.ts` | Network API calls — list interfaces per node, get single interface detail |
+| API endpoints | `src/api/endpoints/access.ts` | Access API calls — users, groups, roles |
+| API endpoints | `src/api/endpoints/vzdump.ts` | Backup job API calls — list, get, create, delete scheduled jobs |
 | **Services** | `src/services/vm.ts` | VM business logic — `resolveVMNode()` for auto-discovery, service functions returning `CommandResult<T>` |
 | **Services** | `src/services/lxc.ts` | LXC business logic — mirrors vm.ts, adds `execLXCService()` |
 | **Services** | `src/services/node.ts` | Node business logic — 9 service functions; safeguards handled in CLI layer |
 | **Services** | `src/services/storage.ts` | Storage business logic — 6 service functions; `--node` required for node-scoped calls |
+| **Services** | `src/services/cluster.ts` | Cluster business logic — 3 service functions |
+| **Services** | `src/services/network.ts` | Network business logic — 2 service functions |
+| **Services** | `src/services/access.ts` | Access business logic — 4 service functions (users, groups, roles) |
+| **Services** | `src/services/vzdump.ts` | Backup job business logic — 4 service functions |
 | Safeguards | `src/safeguards/` | Three independent guards run before every destructive action |
 | Audit log | `src/audit/logger.ts` | Appends one JSON line per action; `source` field distinguishes `"cli"` from `"web"` |
 | Output | `src/output/formatter.ts` | Renders `Record<string, unknown>[]` as table / json / csv; accepts `OutputOptions` for column alignment and summary line |

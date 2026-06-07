@@ -20,6 +20,10 @@ A safe, audited CLI for managing Proxmox VE from your terminal. Built with TypeS
 - **Full LXC lifecycle** — same command set as VMs, plus `lxc exec` for running commands inside containers
 - **Node management** — list, status, version, services, tasks, shutdown/reboot with double-confirmation and affected-workload warning
 - **Storage management** — list pools, inspect status, list/upload/delete content (ISO, templates), list/delete backups
+- **Cluster + HA** — cluster node status, resource inventory, HA resource states
+- **Network config** — list and inspect network interfaces per node (bridges, bonds, VLANs)
+- **Access management** — list users, groups, and roles; inspect user detail
+- **Backup jobs** — list, show, create, and delete vzdump scheduled backup jobs
 
 ---
 
@@ -111,7 +115,7 @@ See [docs/COMMANDS.md](docs/COMMANDS.md) for the full command reference.
 | [Phase 4](docs/plan/phase_4.md) | ✅ Complete | LXC container management |
 | [Phase 5](docs/plan/phase_5.md) | ✅ Complete | Node management |
 | [Phase 6](docs/plan/phase_6.md) | ✅ Complete | Storage management |
-| [Phase 7](docs/plan/phase_7.md) | 🔲 Pending | Full API coverage |
+| [Phase 7](docs/plan/phase_7.md) | ✅ Complete | Cluster, network, access, and backup job management |
 | [Phase 8](docs/plan/phase_8.md) | 🔲 Pending | Web UI (React + Vite + API server) |
 
 ---
