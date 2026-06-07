@@ -33,24 +33,24 @@
 
 ## Implementation
 
-_To be detailed at the start of Phase 2._
+Extended `src/api/endpoints/vm.ts` with all lifecycle API calls. Added service functions to `src/services/vm.ts` with `resolveVMNode()` helper for auto-discovery. Created individual command files under `src/cli/commands/vm/`. `checkDryRun` simplified to a pure boolean check; all dry-run messaging uses `dryRunMsg()` from the Phase 2 palette. `vm delete` requires double-confirm (typed VM name). `vm snapshot rollback` shows a high-risk warning before confirm. All destructive commands run the full safeguard pipeline.
 
 ## Checklist
 
-- [ ] `src/api/endpoints/vm.ts` — extended with all lifecycle API calls
-- [ ] `src/cli/commands/vm/status.ts`
-- [ ] `src/cli/commands/vm/start.ts`
-- [ ] `src/cli/commands/vm/stop.ts`
-- [ ] `src/cli/commands/vm/shutdown.ts`
-- [ ] `src/cli/commands/vm/reboot.ts`
-- [ ] `src/cli/commands/vm/suspend.ts`
-- [ ] `src/cli/commands/vm/resume.ts`
-- [ ] `src/cli/commands/vm/snapshot/` (create, list, delete, rollback)
-- [ ] `src/cli/commands/vm/delete.ts` (double-confirm)
-- [ ] `src/cli/commands/vm/config.ts`
-- [ ] Safeguard pipeline verified on all destructive actions
-- [ ] All actions appear in audit log
-- [ ] `pnpm build` + `pnpm typecheck` pass
-- [ ] `README.md` updated — phase marked ✅, features list updated
-- [ ] `docs/COMMANDS.md` updated — example output and new commands documented
-- [ ] `CLAUDE.md` updated — new layers, helpers, or patterns reflected
+- [x] `src/api/endpoints/vm.ts` — extended with all lifecycle API calls
+- [x] `src/cli/commands/vm/status.ts`
+- [x] `src/cli/commands/vm/start.ts`
+- [x] `src/cli/commands/vm/stop.ts`
+- [x] `src/cli/commands/vm/shutdown.ts`
+- [x] `src/cli/commands/vm/reboot.ts`
+- [x] `src/cli/commands/vm/suspend.ts`
+- [x] `src/cli/commands/vm/resume.ts`
+- [x] `src/cli/commands/vm/snapshot/` (create, list, delete, rollback)
+- [x] `src/cli/commands/vm/delete.ts` (double-confirm)
+- [x] `src/cli/commands/vm/config.ts`
+- [x] Safeguard pipeline verified on all destructive actions
+- [x] All actions appear in audit log
+- [x] `pnpm build` + `pnpm typecheck` pass
+- [x] `README.md` updated — phase marked ✅, features list updated
+- [x] `docs/COMMANDS.md` updated — example output and new commands documented
+- [x] `CLAUDE.md` updated — new layers, helpers, or patterns reflected

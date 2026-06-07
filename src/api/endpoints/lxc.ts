@@ -1,0 +1,143 @@
+import { spawnSync } from 'child_process';
+import { ProxmoxClient } from '../client';
+import { getNodes } from './vm';
+
+export interface LXCInfo {
+  vmid: number;
+  name?: string;
+  status: 'running' | 'stopped' | 'paused' | 'suspended' | string;
+  cpus?: number;
+  maxmem?: number;
+  maxdisk?: number;
+  uptime?: number;
+  template?: number;
+  tags?: string;
+}
+
+export interface NodeLXCInfo extends LXCInfo {
+  node: string;
+}
+
+export interface LXCStatusDetail {
+  vmid: number;
+  name?: string;
+  status: string;
+  uptime?: number;
+  cpus?: number;
+  maxmem?: number;
+  maxdisk?: number;
+  node: string;
+}
+
+export type LXCConfig = Record<string, unknown>;
+
+export interface LXCSnapshotInfo {
+  snapname: string;
+  description?: string;
+  snaptime?: number;
+  parent?: string;
+}
+
+export interface ExecResult {
+  stdout: string;
+  stderr: string;
+  exitCode: number;
+}
+
+export async function listAllLXC(client: ProxmoxClient): Promise<NodeLXCInfo[]> {
+  const nodes = await getNodes(client);
+  const results: NodeLXCInfo[] = [];
+
+  for (const { node } of nodes) {
+    const containers = await client.get<LXCInfo[]>(`/nodes/${node}/lxc`);
+    for (const ct of containers) {
+      results.push({ ...ct, node });
+    }
+  }
+
+  return results;
+}
+
+export async function getLXCStatus(client: ProxmoxClient, node: string, vmid: number): Promise<LXCStatusDetail> {
+  const data = await client.get<LXCStatusDetail>(`/nodes/${node}/lxc/${vmid}/status/current`);
+  return { ...data, node };
+}
+
+export async function getLXCConfig(client: ProxmoxClient, node: string, vmid: number): Promise<LXCConfig> {
+  return client.get<LXCConfig>(`/nodes/${node}/lxc/${vmid}/config`);
+}
+
+export async function startLXC(client: ProxmoxClient, node: string, vmid: number): Promise<void> {
+  await client.post(`/nodes/${node}/lxc/${vmid}/status/start`);
+}
+
+export async function stopLXC(client: ProxmoxClient, node: string, vmid: number): Promise<void> {
+  await client.post(`/nodes/${node}/lxc/${vmid}/status/stop`);
+}
+
+export async function shutdownLXC(client: ProxmoxClient, node: string, vmid: number): Promise<void> {
+  await client.post(`/nodes/${node}/lxc/${vmid}/status/shutdown`);
+}
+
+export async function rebootLXC(client: ProxmoxClient, node: string, vmid: number): Promise<void> {
+  await client.post(`/nodes/${node}/lxc/${vmid}/status/reboot`);
+}
+
+export async function suspendLXC(client: ProxmoxClient, node: string, vmid: number): Promise<void> {
+  await client.post(`/nodes/${node}/lxc/${vmid}/status/suspend`);
+}
+
+export async function resumeLXC(client: ProxmoxClient, node: string, vmid: number): Promise<void> {
+  await client.post(`/nodes/${node}/lxc/${vmid}/status/resume`);
+}
+
+export async function deleteLXC(client: ProxmoxClient, node: string, vmid: number): Promise<void> {
+  await client.delete(`/nodes/${node}/lxc/${vmid}`);
+}
+
+export async function listLXCSnapshots(client: ProxmoxClient, node: string, vmid: number): Promise<LXCSnapshotInfo[]> {
+  return client.get<LXCSnapshotInfo[]>(`/nodes/${node}/lxc/${vmid}/snapshot`);
+}
+
+export async function createLXCSnapshot(
+  client: ProxmoxClient,
+  node: string,
+  vmid: number,
+  name: string,
+  description?: string
+): Promise<void> {
+  await client.post(`/nodes/${node}/lxc/${vmid}/snapshot`, {
+    snapname: name,
+    ...(description ? { description } : {}),
+  });
+}
+
+export async function deleteLXCSnapshot(
+  client: ProxmoxClient,
+  node: string,
+  vmid: number,
+  name: string
+): Promise<void> {
+  await client.delete(`/nodes/${node}/lxc/${vmid}/snapshot/${name}`);
+}
+
+export async function rollbackLXCSnapshot(
+  client: ProxmoxClient,
+  node: string,
+  vmid: number,
+  name: string
+): Promise<void> {
+  await client.post(`/nodes/${node}/lxc/${vmid}/snapshot/${name}/rollback`);
+}
+
+export function execLXC(host: string, vmid: number, command: string[]): ExecResult {
+  const result = spawnSync('ssh', [`root@${host}`, 'pct', 'exec', String(vmid), '--', ...command], {
+    encoding: 'utf-8',
+  });
+
+  return {
+    stdout: result.stdout ?? '',
+    stderr: result.stderr ?? '',
+    exitCode: result.status ?? 1,
+  };
+}

@@ -33,7 +33,7 @@ function outputTable(data: Record<string, unknown>[], opts?: OutputOptions): voi
   const table = new Table({
     head: headers.map(h => chalk.cyan(h)),
     style: { head: [], border: [], compact: true },
-    colAligns: opts?.colAligns,
+    ...(opts?.colAligns ? { colAligns: opts.colAligns } : {}),
   });
 
   for (const row of data) {

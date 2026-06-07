@@ -34,8 +34,10 @@ There are no tests yet. Type-check is the primary correctness gate.
 |---|---|---|
 | Config | `src/config/` | Zod-validated config loading; auto-detects legacy vs. new format |
 | API client | `src/api/client.ts` | Axios wrapper with token auth and self-signed TLS; all requests go through here |
-| API endpoints | `src/api/endpoints/` | Raw per-resource functions that take a `ProxmoxClient` and return typed data |
-| **Services** | `src/services/` | **Shared business logic** — take `(config, profileName?)`, return `CommandResult<T>`, used by both CLI and web server |
+| API endpoints | `src/api/endpoints/vm.ts` | VM API calls — list, status, config, lifecycle actions, snapshot CRUD |
+| API endpoints | `src/api/endpoints/lxc.ts` | LXC API calls — same set as VM plus `execLXC()` (SSH via child_process) |
+| **Services** | `src/services/vm.ts` | VM business logic — `resolveVMNode()` for auto-discovery, service functions returning `CommandResult<T>` |
+| **Services** | `src/services/lxc.ts` | LXC business logic — mirrors vm.ts, adds `execLXCService()` |
 | Safeguards | `src/safeguards/` | Three independent guards run before every destructive action |
 | Audit log | `src/audit/logger.ts` | Appends one JSON line per action; `source` field distinguishes `"cli"` from `"web"` |
 | Output | `src/output/formatter.ts` | Renders `Record<string, unknown>[]` as table / json / csv; accepts `OutputOptions` for column alignment and summary line |

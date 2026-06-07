@@ -1,5 +1,6 @@
 import { Command } from 'commander';
 import { registerVMCommands } from './commands/vm/index';
+import { registerLXCCommands } from './commands/lxc/index';
 
 export function createProgram(): Command {
   const program = new Command();
@@ -14,6 +15,7 @@ export function createProgram(): Command {
     .option('--yes', 'Skip confirmation prompts');
 
   registerVMCommands(program);
+  registerLXCCommands(program);
 
   program.action(() => {
     program.outputHelp();

@@ -29,16 +29,16 @@
 
 ## Implementation
 
-_To be detailed at the start of Phase 3._
+Created `src/api/endpoints/lxc.ts` mirroring the VM endpoint structure at `/nodes/{node}/lxc/{vmid}/...`. `lxc exec` uses `child_process.spawnSync` to SSH to the node and run `pct exec` — requires key-based root SSH access. Created `src/services/lxc.ts` with `resolveLXCNode()` helper. Created all CLI command files under `src/cli/commands/lxc/`, including a snapshot subgroup. `lxc delete` requires double-confirmation (typed container name). `lxc exec` always prompts even with `--yes` since the spec says it must never run silently. Registered `registerLXCCommands` in `src/cli/program.ts`.
 
 ## Checklist
 
-- [ ] `src/api/endpoints/lxc.ts` — all LXC API calls
-- [ ] `src/cli/commands/lxc/` — all commands
-- [ ] `lxc exec` requires confirmation
-- [ ] Protected containers respected
-- [ ] All actions in audit log
-- [ ] `pnpm build` + `pnpm typecheck` pass
-- [ ] `README.md` updated — phase marked ✅, features list updated
-- [ ] `docs/COMMANDS.md` updated — example output and new commands documented
-- [ ] `CLAUDE.md` updated — new layers, helpers, or patterns reflected
+- [x] `src/api/endpoints/lxc.ts` — all LXC API calls
+- [x] `src/cli/commands/lxc/` — all commands
+- [x] `lxc exec` requires confirmation
+- [x] Protected containers respected
+- [x] All actions in audit log
+- [x] `pnpm build` + `pnpm typecheck` pass
+- [x] `README.md` updated — phase marked ✅, features list updated
+- [x] `docs/COMMANDS.md` updated — example output and new commands documented
+- [x] `CLAUDE.md` updated — new layers, helpers, or patterns reflected

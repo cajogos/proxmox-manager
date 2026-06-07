@@ -1,64 +1,65 @@
 import { Command } from 'commander';
 import { OutputFormat } from '../../../output/formatter';
-import { listVMs } from './list';
-import { vmStatus } from './status';
-import { vmConfig } from './config';
-import { vmStart } from './start';
-import { vmStop } from './stop';
-import { vmShutdown } from './shutdown';
-import { vmReboot } from './reboot';
-import { vmSuspend } from './suspend';
-import { vmResume } from './resume';
-import { vmDelete } from './delete';
-import { registerVMSnapshotCommands } from './snapshot/index';
+import { listLXC } from './list';
+import { lxcStatus } from './status';
+import { lxcConfig } from './config';
+import { lxcStart } from './start';
+import { lxcStop } from './stop';
+import { lxcShutdown } from './shutdown';
+import { lxcReboot } from './reboot';
+import { lxcSuspend } from './suspend';
+import { lxcResume } from './resume';
+import { lxcDelete } from './delete';
+import { lxcExec } from './exec';
+import { registerLXCSnapshotCommands } from './snapshot/index';
 
-export function registerVMCommands(program: Command): void {
-  const vm = program
-    .command('vm')
-    .description('Manage QEMU virtual machines')
-    .action(function () { vm.outputHelp(); });
+export function registerLXCCommands(program: Command): void {
+  const lxc = program
+    .command('lxc')
+    .description('Manage LXC containers')
+    .action(function () { lxc.outputHelp(); });
 
-  vm.command('list')
-    .description('List all VMs across all nodes')
+  lxc.command('list')
+    .description('List all containers across all nodes')
     .action(async (_opts, cmd: Command) => {
       const globals = cmd.optsWithGlobals<{ profile?: string; format: string; dryRun: boolean; }>();
-      await listVMs({
+      await listLXC({
         profile: globals.profile,
         format: globals.format as OutputFormat,
         dryRun: !!globals.dryRun,
       });
     });
 
-  vm.command('status <vmid>')
-    .description('Show detailed status of a VM')
+  lxc.command('status <ctid>')
+    .description('Show detailed status of a container')
     .option('--node <name>', 'Target node (auto-discovered if omitted)')
-    .action(async (vmid: string, _opts, cmd: Command) => {
+    .action(async (ctid: string, _opts, cmd: Command) => {
       const globals = cmd.optsWithGlobals<{ profile?: string; format: string; }>();
-      await vmStatus(Number(vmid), {
+      await lxcStatus(Number(ctid), {
         profile: globals.profile,
         format: globals.format as OutputFormat,
         node: cmd.opts().node,
       });
     });
 
-  vm.command('config <vmid>')
-    .description('Show VM configuration')
+  lxc.command('config <ctid>')
+    .description('Show container configuration')
     .option('--node <name>', 'Target node (auto-discovered if omitted)')
-    .action(async (vmid: string, _opts, cmd: Command) => {
+    .action(async (ctid: string, _opts, cmd: Command) => {
       const globals = cmd.optsWithGlobals<{ profile?: string; format: string; }>();
-      await vmConfig(Number(vmid), {
+      await lxcConfig(Number(ctid), {
         profile: globals.profile,
         format: globals.format as OutputFormat,
         node: cmd.opts().node,
       });
     });
 
-  vm.command('start <vmid>')
-    .description('Start a stopped VM')
+  lxc.command('start <ctid>')
+    .description('Start a stopped container')
     .option('--node <name>', 'Target node (auto-discovered if omitted)')
-    .action(async (vmid: string, _opts, cmd: Command) => {
+    .action(async (ctid: string, _opts, cmd: Command) => {
       const globals = cmd.optsWithGlobals<{ profile?: string; dryRun?: boolean; yes?: boolean; }>();
-      await vmStart(Number(vmid), {
+      await lxcStart(Number(ctid), {
         profile: globals.profile,
         node: cmd.opts().node,
         dryRun: !!globals.dryRun,
@@ -66,12 +67,12 @@ export function registerVMCommands(program: Command): void {
       });
     });
 
-  vm.command('stop <vmid>')
-    .description('Hard-stop a running VM')
+  lxc.command('stop <ctid>')
+    .description('Hard-stop a running container')
     .option('--node <name>', 'Target node (auto-discovered if omitted)')
-    .action(async (vmid: string, _opts, cmd: Command) => {
+    .action(async (ctid: string, _opts, cmd: Command) => {
       const globals = cmd.optsWithGlobals<{ profile?: string; dryRun?: boolean; yes?: boolean; }>();
-      await vmStop(Number(vmid), {
+      await lxcStop(Number(ctid), {
         profile: globals.profile,
         node: cmd.opts().node,
         dryRun: !!globals.dryRun,
@@ -79,12 +80,12 @@ export function registerVMCommands(program: Command): void {
       });
     });
 
-  vm.command('shutdown <vmid>')
-    .description('Gracefully shut down a VM')
+  lxc.command('shutdown <ctid>')
+    .description('Gracefully shut down a container')
     .option('--node <name>', 'Target node (auto-discovered if omitted)')
-    .action(async (vmid: string, _opts, cmd: Command) => {
+    .action(async (ctid: string, _opts, cmd: Command) => {
       const globals = cmd.optsWithGlobals<{ profile?: string; dryRun?: boolean; yes?: boolean; }>();
-      await vmShutdown(Number(vmid), {
+      await lxcShutdown(Number(ctid), {
         profile: globals.profile,
         node: cmd.opts().node,
         dryRun: !!globals.dryRun,
@@ -92,12 +93,12 @@ export function registerVMCommands(program: Command): void {
       });
     });
 
-  vm.command('reboot <vmid>')
-    .description('Reboot a running VM')
+  lxc.command('reboot <ctid>')
+    .description('Reboot a running container')
     .option('--node <name>', 'Target node (auto-discovered if omitted)')
-    .action(async (vmid: string, _opts, cmd: Command) => {
+    .action(async (ctid: string, _opts, cmd: Command) => {
       const globals = cmd.optsWithGlobals<{ profile?: string; dryRun?: boolean; yes?: boolean; }>();
-      await vmReboot(Number(vmid), {
+      await lxcReboot(Number(ctid), {
         profile: globals.profile,
         node: cmd.opts().node,
         dryRun: !!globals.dryRun,
@@ -105,12 +106,12 @@ export function registerVMCommands(program: Command): void {
       });
     });
 
-  vm.command('suspend <vmid>')
-    .description('Suspend a running VM')
+  lxc.command('suspend <ctid>')
+    .description('Suspend a running container')
     .option('--node <name>', 'Target node (auto-discovered if omitted)')
-    .action(async (vmid: string, _opts, cmd: Command) => {
+    .action(async (ctid: string, _opts, cmd: Command) => {
       const globals = cmd.optsWithGlobals<{ profile?: string; dryRun?: boolean; yes?: boolean; }>();
-      await vmSuspend(Number(vmid), {
+      await lxcSuspend(Number(ctid), {
         profile: globals.profile,
         node: cmd.opts().node,
         dryRun: !!globals.dryRun,
@@ -118,12 +119,12 @@ export function registerVMCommands(program: Command): void {
       });
     });
 
-  vm.command('resume <vmid>')
-    .description('Resume a suspended VM')
+  lxc.command('resume <ctid>')
+    .description('Resume a suspended container')
     .option('--node <name>', 'Target node (auto-discovered if omitted)')
-    .action(async (vmid: string, _opts, cmd: Command) => {
+    .action(async (ctid: string, _opts, cmd: Command) => {
       const globals = cmd.optsWithGlobals<{ profile?: string; dryRun?: boolean; yes?: boolean; }>();
-      await vmResume(Number(vmid), {
+      await lxcResume(Number(ctid), {
         profile: globals.profile,
         node: cmd.opts().node,
         dryRun: !!globals.dryRun,
@@ -131,12 +132,12 @@ export function registerVMCommands(program: Command): void {
       });
     });
 
-  vm.command('delete <vmid>')
-    .description('Permanently delete a VM')
+  lxc.command('delete <ctid>')
+    .description('Permanently delete a container')
     .option('--node <name>', 'Target node (auto-discovered if omitted)')
-    .action(async (vmid: string, _opts, cmd: Command) => {
+    .action(async (ctid: string, _opts, cmd: Command) => {
       const globals = cmd.optsWithGlobals<{ profile?: string; dryRun?: boolean; yes?: boolean; }>();
-      await vmDelete(Number(vmid), {
+      await lxcDelete(Number(ctid), {
         profile: globals.profile,
         node: cmd.opts().node,
         dryRun: !!globals.dryRun,
@@ -144,5 +145,17 @@ export function registerVMCommands(program: Command): void {
       });
     });
 
-  registerVMSnapshotCommands(vm);
+  lxc.command('exec <ctid> [command...]')
+    .description('Execute a command inside a container (requires SSH root access to node)')
+    .option('--node <name>', 'Target node (auto-discovered if omitted)')
+    .action(async (ctid: string, command: string[], _opts, cmd: Command) => {
+      const globals = cmd.optsWithGlobals<{ profile?: string; yes?: boolean; }>();
+      await lxcExec(Number(ctid), command, {
+        profile: globals.profile,
+        node: cmd.opts().node,
+        yes: !!globals.yes,
+      });
+    });
+
+  registerLXCSnapshotCommands(lxc);
 }

@@ -16,6 +16,8 @@ A safe, audited CLI for managing Proxmox VE from your terminal. Built with TypeS
 - **Protected resources** — config-driven list of VMs/nodes/containers that cannot be touched
 - **Flexible output** — `--format table|json|csv` on every listing command
 - **Polished CLI** — spinner during API calls, colored status, human-readable memory (GB), compact tables, summary line
+- **Full VM lifecycle** — start, stop, shutdown, reboot, suspend, resume, snapshots, config, delete (with double-confirm)
+- **Full LXC lifecycle** — same command set as VMs, plus `lxc exec` for running commands inside containers
 
 ---
 
@@ -103,8 +105,8 @@ See [docs/COMMANDS.md](docs/COMMANDS.md) for the full command reference.
 |---|---|---|
 | [Phase 1](docs/plan/phase_1.md) | ✅ Complete | Core infrastructure + VM listing |
 | [Phase 2](docs/plan/phase_2.md) | ✅ Complete | CLI aesthetics (colors, spinners, compact tables, human-readable values) |
-| [Phase 3](docs/plan/phase_3.md) | 🔲 Pending | Full VM lifecycle management |
-| [Phase 4](docs/plan/phase_4.md) | 🔲 Pending | LXC container management |
+| [Phase 3](docs/plan/phase_3.md) | ✅ Complete | Full VM lifecycle management |
+| [Phase 4](docs/plan/phase_4.md) | ✅ Complete | LXC container management |
 | [Phase 5](docs/plan/phase_5.md) | 🔲 Pending | Node management |
 | [Phase 6](docs/plan/phase_6.md) | 🔲 Pending | Storage management |
 | [Phase 7](docs/plan/phase_7.md) | 🔲 Pending | Full API coverage |
