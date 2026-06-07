@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
-import { getLXC, lxcAction, type LXCInfo } from '../api/client';
+import { getLXC, lxcAction, type LXCInfo } from '@/api/client';
+import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
-function statusColor(s: string): string {
-  if (s === 'running') return '#68d391';
-  if (s === 'stopped') return '#fc8181';
-  return '#e2e8f0';
+function statusBadge(status: string) {
+  if (status === 'running') return <Badge variant="success">running</Badge>;
+  if (status === 'stopped') return <Badge variant="destructive">stopped</Badge>;
+  return <Badge variant="secondary">{status}</Badge>;
 }
 
 function humanMB(mb?: number): string {
@@ -32,61 +35,59 @@ export default function LXC() {
     void load();
   }
 
-  if (loading) return <p>Loading containers…</p>;
-  if (error) return <p style={{ color: '#fc8181' }}>Error: {error}</p>;
+  if (loading) return <p className="text-muted-foreground">Loading containers…</p>;
+  if (error) return <p className="text-destructive">Error: {error}</p>;
 
   return (
-    <div>
-      <h2 style={{ marginTop: 0 }}>LXC Containers</h2>
-      <p style={{ color: '#718096', fontSize: 13 }}>{containers.length} container(s)</p>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-        <thead>
-          <tr style={{ borderBottom: '1px solid #2d3748', color: '#718096', textAlign: 'left' }}>
-            <th style={{ padding: '8px 12px' }}>CTID</th>
-            <th style={{ padding: '8px 12px' }}>Name</th>
-            <th style={{ padding: '8px 12px' }}>Status</th>
-            <th style={{ padding: '8px 12px' }}>Node</th>
-            <th style={{ padding: '8px 12px' }}>CPUs</th>
-            <th style={{ padding: '8px 12px' }}>Memory</th>
-            <th style={{ padding: '8px 12px' }}>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
+    <div className="space-y-4">
+      <div>
+        <h2 className="text-xl font-semibold">LXC Containers</h2>
+        <p className="text-sm text-muted-foreground">{containers.length} container(s)</p>
+      </div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>CTID</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Node</TableHead>
+            <TableHead>CPUs</TableHead>
+            <TableHead>Memory</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {containers.map(ct => (
-            <tr key={ct.vmid} style={{ borderBottom: '1px solid #2d3748' }}>
-              <td style={{ padding: '8px 12px' }}>{ct.vmid}</td>
-              <td style={{ padding: '8px 12px' }}>{ct.name ?? '-'}</td>
-              <td style={{ padding: '8px 12px', color: statusColor(ct.status) }}>{ct.status}</td>
-              <td style={{ padding: '8px 12px' }}>{ct.node}</td>
-              <td style={{ padding: '8px 12px' }}>{ct.cpus ?? '-'}</td>
-              <td style={{ padding: '8px 12px' }}>{humanMB(ct.maxmem != null ? ct.maxmem / (1024 * 1024) : undefined)}</td>
-              <td style={{ padding: '8px 12px', display: 'flex', gap: 6 }}>
-                {ct.status === 'stopped' && (
-                  <button onClick={() => handleAction(ct.vmid, 'start')} style={btnStyle('#276749')}>Start</button>
-                )}
-                {ct.status === 'running' && (
-                  <>
-                    <button onClick={() => handleAction(ct.vmid, 'shutdown')} style={btnStyle('#744210')}>Shutdown</button>
-                    <button onClick={() => handleAction(ct.vmid, 'stop')} style={btnStyle('#742a2a')}>Stop</button>
-                  </>
-                )}
-              </td>
-            </tr>
+            <TableRow key={ct.vmid}>
+              <TableCell className="font-mono">{ct.vmid}</TableCell>
+              <TableCell>{ct.name ?? '-'}</TableCell>
+              <TableCell>{statusBadge(ct.status)}</TableCell>
+              <TableCell>{ct.node}</TableCell>
+              <TableCell>{ct.cpus ?? '-'}</TableCell>
+              <TableCell>{humanMB(ct.maxmem != null ? ct.maxmem / (1024 * 1024) : undefined)}</TableCell>
+              <TableCell>
+                <div className="flex gap-2">
+                  {ct.status === 'stopped' && (
+                    <Button size="sm" variant="outline" onClick={() => handleAction(ct.vmid, 'start')}>
+                      Start
+                    </Button>
+                  )}
+                  {ct.status === 'running' && (
+                    <>
+                      <Button size="sm" variant="outline" onClick={() => handleAction(ct.vmid, 'shutdown')}>
+                        Shutdown
+                      </Button>
+                      <Button size="sm" variant="destructive" onClick={() => handleAction(ct.vmid, 'stop')}>
+                        Stop
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
-}
-
-function btnStyle(bg: string): React.CSSProperties {
-  return {
-    background: bg,
-    color: '#e2e8f0',
-    border: 'none',
-    borderRadius: 4,
-    padding: '4px 10px',
-    cursor: 'pointer',
-    fontSize: 12,
-  };
 }

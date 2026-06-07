@@ -1,53 +1,37 @@
 import { NavLink, Outlet } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 
-const navStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  width: 180,
-  minHeight: '100vh',
-  background: '#1a1a2e',
-  padding: '24px 16px',
-  gap: 8,
-  flexShrink: 0,
-};
-
-const linkStyle: React.CSSProperties = {
-  padding: '8px 12px',
-  borderRadius: 6,
-  color: '#ccc',
-  textDecoration: 'none',
-  fontSize: 14,
-};
-
-const activeLinkStyle: React.CSSProperties = {
-  ...linkStyle,
-  background: '#16213e',
-  color: '#e2e8f0',
-  fontWeight: 600,
-};
-
-const mainStyle: React.CSSProperties = {
-  flex: 1,
-  padding: 32,
-  fontFamily: 'monospace',
-  color: '#e2e8f0',
-  background: '#0f0f23',
-  minHeight: '100vh',
-};
+const links = [
+  { to: '/', label: 'VMs', end: true },
+  { to: '/lxc', label: 'LXC', end: false },
+  { to: '/nodes', label: 'Nodes', end: false },
+  { to: '/storage', label: 'Storage', end: false },
+];
 
 export default function Layout() {
   return (
-    <div style={{ display: 'flex' }}>
-      <nav style={navStyle}>
-        <div style={{ color: '#e2e8f0', fontWeight: 700, marginBottom: 24, fontSize: 16 }}>
-          Proxmox Manager
-        </div>
-        <NavLink to="/" end style={({ isActive }) => isActive ? activeLinkStyle : linkStyle}>VMs</NavLink>
-        <NavLink to="/lxc" style={({ isActive }) => isActive ? activeLinkStyle : linkStyle}>LXC</NavLink>
-        <NavLink to="/nodes" style={({ isActive }) => isActive ? activeLinkStyle : linkStyle}>Nodes</NavLink>
-        <NavLink to="/storage" style={({ isActive }) => isActive ? activeLinkStyle : linkStyle}>Storage</NavLink>
+    <div className="flex min-h-screen">
+      <nav className="flex w-52 shrink-0 flex-col gap-1 border-r border-sidebar-border bg-sidebar p-5">
+        <span className="mb-4 text-base font-bold text-sidebar-foreground">Proxmox Manager</span>
+        {links.map(({ to, label, end }) => (
+          <NavLink
+            key={to}
+            to={to}
+            end={end}
+            className={({ isActive }) =>
+              cn(
+                'rounded-md px-3 py-2 text-sm transition-colors',
+                isActive
+                  ? 'bg-sidebar-accent font-semibold text-sidebar-accent-foreground'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground',
+              )
+            }
+          >
+            {label}
+          </NavLink>
+        ))}
       </nav>
-      <main style={mainStyle}>
+      <main className="flex-1 p-8">
         <Outlet />
       </main>
     </div>

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
-import { getStorage, type StorageInfo } from '../api/client';
+import { getStorage, type StorageInfo } from '@/api/client';
+import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 
 function humanBytes(b?: number): string {
   if (b == null) return '-';
@@ -23,39 +25,43 @@ export default function Storage() {
     })();
   }, []);
 
-  if (loading) return <p>Loading storage…</p>;
-  if (error) return <p style={{ color: '#fc8181' }}>Error: {error}</p>;
+  if (loading) return <p className="text-muted-foreground">Loading storage…</p>;
+  if (error) return <p className="text-destructive">Error: {error}</p>;
 
   return (
-    <div>
-      <h2 style={{ marginTop: 0 }}>Storage</h2>
-      <p style={{ color: '#718096', fontSize: 13 }}>{pools.length} pool(s)</p>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-        <thead>
-          <tr style={{ borderBottom: '1px solid #2d3748', color: '#718096', textAlign: 'left' }}>
-            <th style={{ padding: '8px 12px' }}>Storage</th>
-            <th style={{ padding: '8px 12px' }}>Type</th>
-            <th style={{ padding: '8px 12px' }}>Total</th>
-            <th style={{ padding: '8px 12px' }}>Used</th>
-            <th style={{ padding: '8px 12px' }}>Available</th>
-            <th style={{ padding: '8px 12px' }}>Active</th>
-          </tr>
-        </thead>
-        <tbody>
+    <div className="space-y-4">
+      <div>
+        <h2 className="text-xl font-semibold">Storage</h2>
+        <p className="text-sm text-muted-foreground">{pools.length} pool(s)</p>
+      </div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Storage</TableHead>
+            <TableHead>Type</TableHead>
+            <TableHead>Total</TableHead>
+            <TableHead>Used</TableHead>
+            <TableHead>Available</TableHead>
+            <TableHead>Active</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {pools.map(p => (
-            <tr key={p.storage} style={{ borderBottom: '1px solid #2d3748' }}>
-              <td style={{ padding: '8px 12px' }}>{p.storage}</td>
-              <td style={{ padding: '8px 12px' }}>{p.type}</td>
-              <td style={{ padding: '8px 12px' }}>{humanBytes(p.total)}</td>
-              <td style={{ padding: '8px 12px' }}>{humanBytes(p.used)}</td>
-              <td style={{ padding: '8px 12px' }}>{humanBytes(p.avail)}</td>
-              <td style={{ padding: '8px 12px', color: p.active ? '#68d391' : '#fc8181' }}>
-                {p.active ? 'yes' : 'no'}
-              </td>
-            </tr>
+            <TableRow key={p.storage}>
+              <TableCell className="font-medium">{p.storage}</TableCell>
+              <TableCell>{p.type}</TableCell>
+              <TableCell>{humanBytes(p.total)}</TableCell>
+              <TableCell>{humanBytes(p.used)}</TableCell>
+              <TableCell>{humanBytes(p.avail)}</TableCell>
+              <TableCell>
+                {p.active
+                  ? <Badge variant="success">active</Badge>
+                  : <Badge variant="secondary">inactive</Badge>}
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }

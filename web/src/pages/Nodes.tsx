@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
-import { getNodes, type NodeInfo } from '../api/client';
+import { getNodes, type NodeInfo } from '@/api/client';
+import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 
-function statusColor(s: string): string {
-  if (s === 'online') return '#68d391';
-  if (s === 'offline') return '#fc8181';
-  return '#e2e8f0';
+function statusBadge(status: string) {
+  if (status === 'online') return <Badge variant="success">online</Badge>;
+  if (status === 'offline') return <Badge variant="destructive">offline</Badge>;
+  return <Badge variant="secondary">{status}</Badge>;
 }
 
 function humanSeconds(s?: number): string {
@@ -31,39 +33,41 @@ export default function Nodes() {
     })();
   }, []);
 
-  if (loading) return <p>Loading nodes…</p>;
-  if (error) return <p style={{ color: '#fc8181' }}>Error: {error}</p>;
+  if (loading) return <p className="text-muted-foreground">Loading nodes…</p>;
+  if (error) return <p className="text-destructive">Error: {error}</p>;
 
   return (
-    <div>
-      <h2 style={{ marginTop: 0 }}>Nodes</h2>
-      <p style={{ color: '#718096', fontSize: 13 }}>{nodes.length} node(s)</p>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-        <thead>
-          <tr style={{ borderBottom: '1px solid #2d3748', color: '#718096', textAlign: 'left' }}>
-            <th style={{ padding: '8px 12px' }}>Node</th>
-            <th style={{ padding: '8px 12px' }}>Status</th>
-            <th style={{ padding: '8px 12px' }}>CPU</th>
-            <th style={{ padding: '8px 12px' }}>Memory</th>
-            <th style={{ padding: '8px 12px' }}>Uptime</th>
-          </tr>
-        </thead>
-        <tbody>
+    <div className="space-y-4">
+      <div>
+        <h2 className="text-xl font-semibold">Nodes</h2>
+        <p className="text-sm text-muted-foreground">{nodes.length} node(s)</p>
+      </div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Node</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>CPU</TableHead>
+            <TableHead>Memory</TableHead>
+            <TableHead>Uptime</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {nodes.map(n => (
-            <tr key={n.node} style={{ borderBottom: '1px solid #2d3748' }}>
-              <td style={{ padding: '8px 12px' }}>{n.node}</td>
-              <td style={{ padding: '8px 12px', color: statusColor(n.status) }}>{n.status}</td>
-              <td style={{ padding: '8px 12px' }}>{n.cpu != null ? `${(n.cpu * 100).toFixed(1)}%` : '-'}</td>
-              <td style={{ padding: '8px 12px' }}>
+            <TableRow key={n.node}>
+              <TableCell className="font-medium">{n.node}</TableCell>
+              <TableCell>{statusBadge(n.status)}</TableCell>
+              <TableCell>{n.cpu != null ? `${(n.cpu * 100).toFixed(1)}%` : '-'}</TableCell>
+              <TableCell>
                 {n.mem != null && n.maxmem != null
-                  ? `${(n.mem / (1024 ** 3)).toFixed(1)} / ${(n.maxmem / (1024 ** 3)).toFixed(1)} GB`
+                  ? `${(n.mem / 1024 ** 3).toFixed(1)} / ${(n.maxmem / 1024 ** 3).toFixed(1)} GB`
                   : '-'}
-              </td>
-              <td style={{ padding: '8px 12px' }}>{humanSeconds(n.uptime)}</td>
-            </tr>
+              </TableCell>
+              <TableCell>{humanSeconds(n.uptime)}</TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }
