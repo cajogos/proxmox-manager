@@ -1,4 +1,5 @@
 import http from 'http';
+import path from 'path';
 import express from 'express';
 import { loadConfig } from '../config/loader';
 import { configureAuditLog } from '../audit/logger';
@@ -49,6 +50,12 @@ app.use('/api/access', accessRouter(config));
 app.use('/api/backup', backupRouter(config));
 app.use('/api/docs', docsRouter());
 app.use('/api', sseRouter(config));
+
+const webDist = path.resolve(__dirname, '../../web/dist');
+app.use(express.static(webDist));
+app.get('*', (_req, res) => {
+  res.sendFile(path.join(webDist, 'index.html'));
+});
 
 app.use(errorHandler);
 
