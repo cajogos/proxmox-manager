@@ -99,10 +99,15 @@ Follow the pattern in `src/cli/commands/vm/` and `src/services/vm.ts`:
 
 ### Development phases
 
-Implementation is split into phases tracked in `docs/plan/phase_*.md`. Each phase doc has a **Requirements** section at the top and a tickable **Checklist** at the bottom. After completing any phase:
+Phases 1–8 are complete. The remaining work is tracked in two files:
 
-1. Tick all checklist items in `docs/plan/phase_N.md`
-2. Update `README.md` — mark the phase ✅ Complete in the phases table; add any new features to the Features list
+- **`docs/plan/final_phase.md`** — Incomplete scope from phases 7–8 (VM live migration, API token CRUD, web routes + UI pages for cluster/network/access/backup). Each section has a Requirements block and a tickable Checklist.
+- **`docs/plan/ideas.md`** — Future ideas and observations, not yet committed to.
+
+After completing any item from `final_phase.md`:
+
+1. Tick all relevant checklist items in `docs/plan/final_phase.md`
+2. Update `README.md` — add any new features to the Features list
 3. Update `docs/COMMANDS.md` — update example output and add new commands
 4. Update `CLAUDE.md` — reflect new layers, helpers, or patterns added
 
