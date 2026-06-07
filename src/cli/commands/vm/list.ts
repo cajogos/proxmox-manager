@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { loadConfig } from '../../../config/loader';
+import { loadConfig, resolveProfile } from '../../../config/loader';
 import { configureAuditLog, audit } from '../../../audit/logger';
 import { getVMs } from '../../../services/vm';
 import { output, OutputFormat } from '../../../output/formatter';
@@ -14,8 +14,10 @@ export async function listVMs(opts: ListVMsOptions): Promise<void> {
   const config = loadConfig();
   configureAuditLog(config.auditLog.path);
 
+  const { name: profileName } = resolveProfile(config, opts.profile);
+
   const auditBase = {
-    profile: opts.profile ?? config.defaultProfile ?? 'default',
+    profile: profileName,
     command: 'vm list',
     resource: { type: 'vm' },
     dryRun: opts.dryRun,

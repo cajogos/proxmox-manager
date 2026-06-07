@@ -34,6 +34,10 @@ function ensureDir(filePath: string): void {
 }
 
 export function audit(entry: AuditEntry): void {
-  ensureDir(configuredPath);
-  appendFileSync(configuredPath, JSON.stringify(entry) + '\n', 'utf-8');
+  try {
+    ensureDir(configuredPath);
+    appendFileSync(configuredPath, JSON.stringify(entry) + '\n', 'utf-8');
+  } catch {
+    // Audit write failures must not crash callers
+  }
 }

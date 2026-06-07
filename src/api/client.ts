@@ -54,15 +54,6 @@ export class ProxmoxClient {
     }
   }
 
-  async hasPermission(path: string): Promise<boolean> {
-    try {
-      const data = await this.get<Record<string, Record<string, unknown>>>(`/access/permissions?path=${encodeURIComponent(path)}`);
-      const perms = data[path];
-      return perms !== undefined && Object.keys(perms).length > 0;
-    } catch {
-      return false;
-    }
-  }
 }
 
 function wrapAxiosError(e: unknown): Error {

@@ -1,27 +1,42 @@
 import express from 'express';
-import { loadConfig } from '../config/loader';
+import { loadConfig, resolveProfile } from '../config/loader';
 import { configureAuditLog, audit } from '../audit/logger';
 import { getVMs } from '../services/vm';
+import { version } from '../../package.json';
 
 const PORT = parseInt(process.env.SERVER_PORT ?? '3000', 10);
 
 const app = express();
 app.use(express.json());
 
-let config = loadConfig();
+let config: ReturnType<typeof loadConfig>;
+try {
+  config = loadConfig();
+} catch (e) {
+  const msg = e instanceof Error ? e.message : String(e);
+  console.error(`Failed to load config: ${msg}`);
+  process.exit(1);
+}
 configureAuditLog(config.auditLog.path);
 
 app.get('/health', (_req, res) => {
-  res.json({ ok: true, version: '0.1.0' });
+  res.json({ ok: true, version });
 });
 
 app.get('/api/vms', async (req, res) => {
   const profileName = req.query.profile as string | undefined;
   const result = await getVMs(config, profileName);
 
+  let resolvedProfile: string;
+  try {
+    resolvedProfile = resolveProfile(config, profileName).name;
+  } catch {
+    resolvedProfile = profileName ?? config.defaultProfile ?? 'default';
+  }
+
   audit({
     timestamp: new Date().toISOString(),
-    profile: profileName ?? config.defaultProfile ?? 'default',
+    profile: resolvedProfile,
     command: 'vm list',
     resource: { type: 'vm' },
     dryRun: false,
