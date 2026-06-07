@@ -15,5 +15,9 @@ export function createProgram(): Command {
 
   registerVMCommands(program);
 
+  program.action(() => {
+    program.outputHelp();
+  });
+
   return program;
 }
