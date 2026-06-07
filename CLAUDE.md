@@ -70,11 +70,11 @@ Type-check is the primary correctness gate. Tests exist in `tests/` but coverage
 | Web server | `src/server/index.ts` | Bootstrap: loads config, mounts middleware and routers, listens on `SERVER_PORT` (default 3000) |
 | Web middleware | `src/server/middleware/profile.ts` | Resolves profile from `?profile=` query or `X-Profile` header; attaches to `req.profileName` |
 | Web middleware | `src/server/middleware/error.ts` | Express 5 catch-all error handler: `(err, req, res, next)` → `{ ok: false, error }` |
-| Web routes | `src/server/routes/` | Route files: `vms.ts`, `lxc.ts`, `nodes.ts`, `storage.ts`, `cluster.ts`, `network.ts`, `access.ts`, `backup.ts` — each exports a factory `xxxRouter(config)` |
+| Web routes | `src/server/routes/` | Route files: `vms.ts`, `lxc.ts`, `nodes.ts`, `storage.ts`, `cluster.ts`, `network.ts`, `access.ts`, `backup.ts`, `docs.ts` — each exports a factory `xxxRouter(config)` (docs takes no config) |
 | SSE | `src/server/sse.ts` | `GET /api/tasks/:upid/stream` — polls Proxmox task status every 1 s, streams as Server-Sent Events until stopped |
 | WebSocket terminal | `src/server/terminal.ts` | `attachTerminalWebSocket(server, config)` — upgrades HTTP to WS at `/ws/terminal/{ctid}`; relays to Proxmox termproxy + vncwebsocket |
 | Web UI | `web/` | React + Vite frontend; own `package.json` + `tsconfig.json`; workspace member via `pnpm-workspace.yaml` |
-| Web API client | `web/src/api/client.ts` | Typed `fetch` wrappers for all API endpoints (VMs, LXC, nodes, storage, cluster, network, access, backup) |
+| Web API client | `web/src/api/client.ts` | Typed `fetch` wrappers for all API endpoints (VMs, LXC, nodes, storage, cluster, network, access, backup, docs) |
 | Web terminal | `web/src/components/Terminal.tsx` | xterm.js component that opens a WebSocket to `/ws/terminal/{ctid}` |
 | Tests | `tests/` | Vitest unit tests; run with `pnpm test`. Mock endpoint modules with `vi.hoisted()` + `vi.mock()` |
 

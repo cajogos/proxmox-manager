@@ -12,6 +12,7 @@ import { clusterRouter } from './routes/cluster';
 import { networkRouter } from './routes/network';
 import { accessRouter } from './routes/access';
 import { backupRouter } from './routes/backup';
+import { docsRouter } from './routes/docs';
 import { sseRouter } from './sse';
 import { attachTerminalWebSocket } from './terminal';
 import { version } from '../../package.json';
@@ -45,6 +46,7 @@ app.use('/api/cluster', clusterRouter(config));
 app.use('/api/network', networkRouter(config));
 app.use('/api/access', accessRouter(config));
 app.use('/api/backup', backupRouter(config));
+app.use('/api/docs', docsRouter());
 app.use('/api', sseRouter(config));
 
 app.use(errorHandler);

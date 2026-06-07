@@ -225,3 +225,18 @@ export function getBackupJobs(profile?: string): Promise<ApiResult<BackupJob[]>>
 export function deleteBackupJob(id: string, profile?: string): Promise<ApiResult<void>> {
   return apiFetch<void>(`/api/backup/${encodeURIComponent(id)}${qs(profile)}`, { method: 'DELETE' });
 }
+
+// --- Docs ---
+
+export interface DocEntry {
+  name: string;
+  file: string;
+}
+
+export function getDocs(): Promise<ApiResult<DocEntry[]>> {
+  return apiFetch<DocEntry[]>('/api/docs');
+}
+
+export function getDocFile(file: string): Promise<ApiResult<string>> {
+  return apiFetch<string>(`/api/docs/${encodeURIComponent(file)}`);
+}

@@ -10,6 +10,7 @@ const links = [
   { to: '/network', label: 'Network', end: false },
   { to: '/access', label: 'Access', end: false },
   { to: '/backup', label: 'Backup', end: false },
+  { to: '/documentation', label: 'Docs', end: false },
 ];
 
 export default function Layout() {

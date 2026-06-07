@@ -24,7 +24,7 @@ A safe, audited CLI for managing Proxmox VE from your terminal. Built with TypeS
 - **Network config** — list and inspect network interfaces per node (bridges, bonds, VLANs)
 - **Access management** — list users, groups, and roles; inspect user detail; list, create, and delete API tokens
 - **Backup jobs** — list, show, create, and delete vzdump scheduled backup jobs
-- **Web UI** — React + Vite frontend at `http://localhost:5173`; lists VMs, LXC, Nodes, Storage with action buttons; backed by a local Express API server
+- **Web UI** — React + Vite frontend at `http://localhost:5173`; full resource management across VMs, LXC, Nodes, Storage, Cluster, Network, Access, Backup; includes a **Docs** page that renders the CLI command reference in-browser
 
 ## Web UI
 

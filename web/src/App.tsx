@@ -8,6 +8,7 @@ import Cluster from './pages/Cluster';
 import Network from './pages/Network';
 import Access from './pages/Access';
 import Backup from './pages/Backup';
+import Documentation from './pages/Documentation';
 import NotFound from './pages/NotFound';
 
 export default function App() {
@@ -22,6 +23,7 @@ export default function App() {
         <Route path="network" element={<Network />} />
         <Route path="access" element={<Access />} />
         <Route path="backup" element={<Backup />} />
+        <Route path="documentation" element={<Documentation />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
