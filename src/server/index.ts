@@ -17,7 +17,6 @@ import { sseRouter } from './sse';
 import { attachTerminalWebSocket } from './terminal';
 import { version } from '../../package.json';
 
-const PORT = parseInt(process.env.SERVER_PORT ?? '3000', 10);
 
 const app = express();
 app.use(express.json());
@@ -31,6 +30,8 @@ try {
   process.exit(1);
 }
 configureAuditLog(config.auditLog.path);
+
+const PORT = process.env['SERVER_PORT'] ? parseInt(process.env['SERVER_PORT'], 10) : config.serverPort;
 
 app.use(profileMiddleware(config));
 

@@ -25,6 +25,7 @@ export const AuditLogConfigSchema = z.object({
 
 export const ConfigSchema = z.object({
   defaultProfile: z.string().optional(),
+  serverPort: z.number().int().min(1).max(65535).default(3000),
   auditLog: AuditLogConfigSchema.default({ path: '~/.proxmox-manager/audit.log' }),
   profiles: z.record(z.string(), ProfileSchema),
 });
