@@ -26,7 +26,7 @@ node dist/index.js <command> [options]               # compiled
 
 > `pnpm cli` always echoes the command to stderr — use `./pm` instead.
 
-There are no tests yet. Type-check is the primary correctness gate.
+Type-check is the primary correctness gate. Tests exist in `tests/` but coverage is minimal.
 
 ## Architecture
 
@@ -99,7 +99,7 @@ Follow the pattern in `src/cli/commands/vm/` and `src/services/vm.ts`:
 3. Create `src/cli/commands/<resource>/` — thin CLI wrappers: `loadConfig()` → call service → format output → `audit()`.
 4. Add route handlers in `src/server/` that call the same service functions and return JSON.
 5. Register the command group in `src/cli/program.ts`.
-6. Update `docs/plan/phase_N.md` checklist and `docs/COMMANDS.md` with new commands.
+6. Update `README.md`, `docs/COMMANDS.md`, and `CLAUDE.md`.
 
 ### Config format (Zod v4)
 
@@ -111,7 +111,7 @@ Follow the pattern in `src/cli/commands/vm/` and `src/services/vm.ts`:
 
 All phases are complete. The feature set is fully implemented. When adding new commands, update `README.md`, `docs/COMMANDS.md`, and `CLAUDE.md`.
 
-### CLI output conventions (Phase 2+)
+### CLI output conventions
 
 Every command must follow this pattern:
 
