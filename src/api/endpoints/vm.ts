@@ -43,6 +43,13 @@ export interface SnapshotInfo {
 export interface NodeInfo {
   node: string;
   status: string;
+  cpu?: number;
+  mem?: number;
+  maxmem?: number;
+  disk?: number;
+  maxdisk?: number;
+  uptime?: number;
+  pveversion?: string;
 }
 
 export async function getNodes(client: ProxmoxClient): Promise<NodeInfo[]> {

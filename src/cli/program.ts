@@ -1,6 +1,8 @@
 import { Command } from 'commander';
 import { registerVMCommands } from './commands/vm/index';
 import { registerLXCCommands } from './commands/lxc/index';
+import { registerNodeCommands } from './commands/node/index';
+import { registerStorageCommands } from './commands/storage/index';
 
 export function createProgram(): Command {
   const program = new Command();
@@ -16,6 +18,8 @@ export function createProgram(): Command {
 
   registerVMCommands(program);
   registerLXCCommands(program);
+  registerNodeCommands(program);
+  registerStorageCommands(program);
 
   program.action(() => {
     program.outputHelp();

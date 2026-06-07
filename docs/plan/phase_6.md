@@ -21,16 +21,16 @@
 
 ## Implementation
 
-_To be detailed at the start of Phase 5._
+Added `upload<T>()` method to `src/api/client.ts` with `timeout: 0`, `maxBodyLength: Infinity`, and `onUploadProgress` callback. Extended `startSpinner()` to return a `setText()` method for live upload progress updates. Created `src/api/endpoints/storage.ts` with `listAllStorage()` (deduplicates across nodes by highest `total`), `getStorageStatus`, `listStorageContent`, `deleteStorageContent`, `uploadStorageContent` (uses native `FormData` + `Blob` for Node.js 24), and `listAllBackups()`. Created `src/services/storage.ts` with 6 service functions. Created CLI commands under `src/cli/commands/storage/` including `content/` and `backup/` subgroups. Registered `registerStorageCommands` in `src/cli/program.ts`.
 
 ## Checklist
 
-- [ ] `src/api/endpoints/storage.ts` — all storage API calls
-- [ ] `src/cli/commands/storage/` — all commands
-- [ ] Delete operations always confirm
-- [ ] Upload shows progress
-- [ ] All actions in audit log
-- [ ] `pnpm build` + `pnpm typecheck` pass
-- [ ] `README.md` updated — phase marked ✅, features list updated
-- [ ] `docs/COMMANDS.md` updated — example output and new commands documented
-- [ ] `CLAUDE.md` updated — new layers, helpers, or patterns reflected
+- [x] `src/api/endpoints/storage.ts` — all storage API calls
+- [x] `src/cli/commands/storage/` — all commands
+- [x] Delete operations always confirm
+- [x] Upload shows progress
+- [x] All actions in audit log
+- [x] `pnpm build` + `pnpm typecheck` pass
+- [x] `README.md` updated — phase marked ✅, features list updated
+- [x] `docs/COMMANDS.md` updated — example output and new commands documented
+- [x] `CLAUDE.md` updated — new layers, helpers, or patterns reflected

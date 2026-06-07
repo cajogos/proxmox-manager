@@ -26,16 +26,16 @@
 
 ## Implementation
 
-_To be detailed at the start of Phase 4._
+Created `src/api/endpoints/node.ts` with all node API calls — reuses `getNodes()` from `vm.ts` for node listing. Added `cpu`, `mem`, `maxmem`, `disk`, `maxdisk`, `uptime`, and `pveversion` optional fields to the shared `NodeInfo` interface in `vm.ts`. Created `src/services/node.ts` with 9 service functions. Created all CLI command files under `src/cli/commands/node/` including `services/` and `tasks/` subgroups. `node shutdown` and `node reboot` use a two-step confirmation: standard yes/no prompt followed by typing "I understand". Both fetch affected running workloads before prompting. Registered `registerNodeCommands` in `src/cli/program.ts`.
 
 ## Checklist
 
-- [ ] `src/api/endpoints/node.ts` — all node API calls
-- [ ] `src/cli/commands/node/` — all commands
-- [ ] `node shutdown`/`reboot` show affected VMs before confirming
-- [ ] Protected nodes respected
-- [ ] All actions in audit log
-- [ ] `pnpm build` + `pnpm typecheck` pass
-- [ ] `README.md` updated — phase marked ✅, features list updated
-- [ ] `docs/COMMANDS.md` updated — example output and new commands documented
-- [ ] `CLAUDE.md` updated — new layers, helpers, or patterns reflected
+- [x] `src/api/endpoints/node.ts` — all node API calls
+- [x] `src/cli/commands/node/` — all commands
+- [x] `node shutdown`/`reboot` show affected VMs before confirming
+- [x] Protected nodes respected
+- [x] All actions in audit log
+- [x] `pnpm build` + `pnpm typecheck` pass
+- [x] `README.md` updated — phase marked ✅, features list updated
+- [x] `docs/COMMANDS.md` updated — example output and new commands documented
+- [x] `CLAUDE.md` updated — new layers, helpers, or patterns reflected

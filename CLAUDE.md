@@ -34,16 +34,20 @@ There are no tests yet. Type-check is the primary correctness gate.
 |---|---|---|
 | Config | `src/config/` | Zod-validated config loading; auto-detects legacy vs. new format |
 | API client | `src/api/client.ts` | Axios wrapper with token auth and self-signed TLS; all requests go through here |
-| API endpoints | `src/api/endpoints/vm.ts` | VM API calls — list, status, config, lifecycle actions, snapshot CRUD |
+| API endpoints | `src/api/endpoints/vm.ts` | VM API calls — list, status, config, lifecycle actions, snapshot CRUD; exports `getNodes()` and `NodeInfo` |
 | API endpoints | `src/api/endpoints/lxc.ts` | LXC API calls — same set as VM plus `execLXC()` (SSH via child_process) |
+| API endpoints | `src/api/endpoints/node.ts` | Node API calls — status, version, shutdown/reboot, services, tasks; reuses `getNodes()` from vm.ts |
+| API endpoints | `src/api/endpoints/storage.ts` | Storage API calls — list pools (dedup by node), content, upload, delete; `listAllBackups()` |
 | **Services** | `src/services/vm.ts` | VM business logic — `resolveVMNode()` for auto-discovery, service functions returning `CommandResult<T>` |
 | **Services** | `src/services/lxc.ts` | LXC business logic — mirrors vm.ts, adds `execLXCService()` |
+| **Services** | `src/services/node.ts` | Node business logic — 9 service functions; safeguards handled in CLI layer |
+| **Services** | `src/services/storage.ts` | Storage business logic — 6 service functions; `--node` required for node-scoped calls |
 | Safeguards | `src/safeguards/` | Three independent guards run before every destructive action |
 | Audit log | `src/audit/logger.ts` | Appends one JSON line per action; `source` field distinguishes `"cli"` from `"web"` |
 | Output | `src/output/formatter.ts` | Renders `Record<string, unknown>[]` as table / json / csv; accepts `OutputOptions` for column alignment and summary line |
 | Output helpers | `src/output/colors.ts` | `statusColor()`, `successMsg()`, `errorMsg()`, `warnMsg()`, `dryRunMsg()` |
 | Output helpers | `src/output/humanize.ts` | `humanMB()`, `humanSeconds()`, `humanBytes()` |
-| Output helpers | `src/output/spinner.ts` | `startSpinner(text)` — thin ora v5 wrapper; auto-suppressed when not a TTY |
+| Output helpers | `src/output/spinner.ts` | `startSpinner(text)` — thin ora v5 wrapper; returns `stop()` and `setText(t)` for live progress updates |
 | CLI commands | `src/cli/commands/` | Thin wrappers: call a service, format the result, write the audit entry |
 | Web server | `src/server/` | Express server exposing services as REST endpoints |
 
@@ -56,6 +60,8 @@ Every mutating command must run these three checks **in order** before calling t
 3. `confirmAction(action, resource, skipConfirm)` — interactive prompt; respects `--yes`
 
 Then call the API and call `audit()` with the result regardless of success or failure.
+
+**Node shutdown/reboot additional flow:** after the standard safeguard pipeline, fetch running VMs + LXC on the target node, show an affected-workload count warning, then require typing `"I understand"` (case-insensitive) before proceeding.
 
 ### Adding a new command
 
@@ -94,3 +100,6 @@ Every command must follow this pattern:
 - **Summary line** — compute count + per-status breakdown; pass as `opts.summary` to `output()`
 - **Column alignment** — pass `colAligns` to `output()`: right-align numeric columns (IDs, counts, sizes)
 - **Message palette** — use `successMsg()`, `errorMsg()`, `warnMsg()`, `dryRunMsg()` for all non-data output
+- **Upload progress** — `startSpinner()` returns `setText(t)` to update spinner text in-place; pass `(pct) => spinner.setText(...)` as `onProgress` to upload services
+- **`output()` arg order** — always `output(data, format, opts?)` — data first. Cast `opts.format as OutputFormat` when passing from Commander's `string`-typed options. Import `OutputFormat` from `src/output/formatter.ts`.
+- **Profile name** — always call `const { name: profileName } = resolveProfile(config, opts.profile)` before setting `auditBase.profile`; never use `opts.profile ?? config.defaultProfile` (both can be undefined)

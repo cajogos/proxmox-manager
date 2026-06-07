@@ -54,6 +54,28 @@ export class ProxmoxClient {
     }
   }
 
+  async upload<T>(
+    path: string,
+    formData: FormData,
+    onProgress?: (pct: number) => void,
+  ): Promise<T> {
+    try {
+      const response = await this.http.post<{ data: T }>(path, formData, {
+        timeout: 0,
+        maxBodyLength: Infinity,
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: (e) => {
+          if (onProgress && e.total) {
+            onProgress(Math.round((e.loaded / e.total) * 100));
+          }
+        },
+      });
+      return response.data.data;
+    } catch (e) {
+      throw wrapAxiosError(e);
+    }
+  }
+
 }
 
 function wrapAxiosError(e: unknown): Error {

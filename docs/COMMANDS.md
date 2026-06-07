@@ -205,6 +205,149 @@ Same as VM snapshots — `list`, `create`, `delete`, `rollback`.
 
 ---
 
+## Phase 5 — Node Management
+
+### `node list`
+
+```bash
+./pm node list
+```
+
+```
+┌──────┬────────┬───────┬──────────────────────────┬──────────────────────────┬────────┐
+│ Name │ Status │ CPU%  │ Memory                   │ Disk                     │ Uptime │
+├──────┼────────┼───────┼──────────────────────────┼──────────────────────────┼────────┤
+│ pve  │ online │ 12.4% │ 8.2 GB / 32.0 GB         │ 48.3 GB / 500.0 GB       │ 2d 14h │
+└──────┴────────┴───────┴──────────────────────────┴──────────────────────────┴────────┘
+1 node — 1 online · 0 offline
+```
+
+Status is color-coded: `online` → green. CPU%, Memory, and Disk columns are right-aligned.
+
+### `node status <node>`
+
+```bash
+./pm node status pve
+./pm node status pve --format json
+```
+
+### `node version <node>`
+
+```bash
+./pm node version pve
+```
+
+### `node shutdown <node>` / `node reboot <node>`
+
+High-risk: fetches running workload count on the node, shows a warning, requires yes/no confirm, then requires typing `"I understand"` (case-insensitive).
+
+```bash
+./pm node shutdown pve
+./pm node reboot pve
+./pm node shutdown pve --dry-run    # prints intent, no API call
+```
+
+### `node services list <node>`
+
+```bash
+./pm node services list pve
+```
+
+### `node services restart <node> <service>`
+
+```bash
+./pm node services restart pve pveproxy
+```
+
+### `node tasks list <node>`
+
+```bash
+./pm node tasks list pve
+./pm node tasks list pve --limit 50
+```
+
+### `node tasks log <node> <upid>`
+
+```bash
+./pm node tasks log pve "UPID:pve:00001234:5:..."
+```
+
+---
+
+## Phase 6 — Storage Management
+
+### `storage list`
+
+```bash
+./pm storage list
+```
+
+```
+┌───────────┬─────────┬──────┬──────────┬──────────┬──────────┬───────┬──────────────────────┐
+│ Name      │ Type    │ Node │ Avail    │ Used     │ Total    │ Used% │ Content              │
+├───────────┼─────────┼──────┼──────────┼──────────┼──────────┼───────┼──────────────────────┤
+│ local     │ dir     │ pve  │ 400.0 GB │ 100.0 GB │ 500.0 GB │ 20.0% │ iso,vztmpl,backup    │
+│ local-zfs │ zfspool │ pve  │ 120.0 GB │  80.0 GB │ 200.0 GB │ 40.0% │ images,rootdir       │
+└───────────┴─────────┴──────┴──────────┴──────────┴──────────┴───────┴──────────────────────┘
+2 storage pool(s)
+```
+
+Storage pools are deduplicated across nodes (richest entry by total size is kept).
+
+### `storage status <storage>`
+
+Requires `--node <name>`.
+
+```bash
+./pm storage status local --node pve
+```
+
+### `storage content list <storage>`
+
+Requires `--node <name>`. Optionally filter by `--type iso|vztmpl|backup`.
+
+```bash
+./pm storage content list local --node pve
+./pm storage content list local --node pve --type iso
+```
+
+### `storage content upload <storage> <file>`
+
+Requires `--node <name>`. Shows live upload progress (% updated via spinner). Default content type is `iso`; use `--content vztmpl` for container templates.
+
+```bash
+./pm storage content upload local ubuntu-24.04.iso --node pve
+./pm storage content upload local debian-12.tar.zst --node pve --content vztmpl
+```
+
+### `storage content delete <storage> <volid>`
+
+Requires `--node <name>`. Requires confirmation.
+
+```bash
+./pm storage content delete local "local:iso/ubuntu-24.04.iso" --node pve
+```
+
+### `storage backup list`
+
+Lists all backup files across all nodes and storage pools that have `backup` in their content type.
+
+```bash
+./pm storage backup list
+./pm storage backup list --format json
+```
+
+### `storage backup delete <volid>`
+
+Requires `--node <name>` and `--storage <name>`. Requires confirmation.
+
+```bash
+./pm storage backup delete "local:backup/vzdump-qemu-100-2026_06_01.vma.zst" \
+  --node pve --storage local
+```
+
+---
+
 ## Audit Log
 
 Every command — listing, dry-run, failure, cancellation — is written as a JSON line.
