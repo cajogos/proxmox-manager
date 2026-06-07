@@ -6,6 +6,10 @@ const links = [
   { to: '/lxc', label: 'LXC', end: false },
   { to: '/nodes', label: 'Nodes', end: false },
   { to: '/storage', label: 'Storage', end: false },
+  { to: '/cluster', label: 'Cluster', end: false },
+  { to: '/network', label: 'Network', end: false },
+  { to: '/access', label: 'Access', end: false },
+  { to: '/backup', label: 'Backup', end: false },
 ];
 
 export default function Layout() {

@@ -17,6 +17,11 @@ import {
   deleteLXCSnapshot,
   rollbackLXCSnapshot,
   execLXC,
+  cloneLXC,
+  resizeLXCDisk,
+  createLXCTermProxy,
+  CloneLXCParams,
+  TermProxyResult,
   NodeLXCInfo,
   LXCStatusDetail,
   LXCConfig,
@@ -208,3 +213,56 @@ export async function execLXCService(
     return { ok: false, error: e instanceof Error ? e.message : String(e) };
   }
 }
+
+export async function cloneLXCService(
+  config: Config,
+  ctid: number,
+  params: CloneLXCParams,
+  opts: LXCActionOpts,
+): Promise<CommandResult<string>> {
+  try {
+    const { profile } = resolveProfile(config, opts.profile);
+    const client = new ProxmoxClient(profile);
+    const node = await resolveLXCNode(client, ctid, opts.node);
+    const upid = await cloneLXC(client, node, ctid, params);
+    return { ok: true, data: upid };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+export async function resizeLXCDiskService(
+  config: Config,
+  ctid: number,
+  disk: string,
+  size: string,
+  opts: LXCActionOpts,
+): Promise<CommandResult<void>> {
+  try {
+    const { profile } = resolveProfile(config, opts.profile);
+    const client = new ProxmoxClient(profile);
+    const node = await resolveLXCNode(client, ctid, opts.node);
+    await resizeLXCDisk(client, node, ctid, disk, size);
+    return { ok: true, data: undefined };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+export async function createLXCTermProxyService(
+  config: Config,
+  ctid: number,
+  opts: LXCActionOpts,
+): Promise<CommandResult<TermProxyResult & { node: string }>> {
+  try {
+    const { profile } = resolveProfile(config, opts.profile);
+    const client = new ProxmoxClient(profile);
+    const node = await resolveLXCNode(client, ctid, opts.node);
+    const result = await createLXCTermProxy(client, node, ctid);
+    return { ok: true, data: { ...result, node } };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+export { resolveLXCNode };

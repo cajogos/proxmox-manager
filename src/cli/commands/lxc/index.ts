@@ -11,6 +11,8 @@ import { lxcSuspend } from './suspend';
 import { lxcResume } from './resume';
 import { lxcDelete } from './delete';
 import { lxcExec } from './exec';
+import { lxcClone } from './clone';
+import { lxcResize } from './resize';
 import { registerLXCSnapshotCommands } from './snapshot/index';
 
 export function registerLXCCommands(program: Command): void {
@@ -154,6 +156,42 @@ export function registerLXCCommands(program: Command): void {
         profile: globals.profile,
         node: cmd.opts().node,
         yes: !!globals.yes,
+      });
+    });
+
+  lxc.command('clone <ctid> <newid>')
+    .description('Clone a container to a new container ID')
+    .option('--node <name>', 'Source node (auto-discovered if omitted)')
+    .option('--hostname <name>', 'Hostname for the cloned container')
+    .option('--target <node>', 'Target node for the clone')
+    .option('--full', 'Full clone (independent copy, not linked)')
+    .option('--storage <storage>', 'Storage pool for the clone')
+    .option('--description <text>', 'Description for the cloned container')
+    .action(async (ctid: string, newid: string, _opts, cmd: Command) => {
+      const globals = cmd.optsWithGlobals<{ profile?: string; dryRun?: boolean; yes?: boolean; }>();
+      const cmdOpts = cmd.opts<{ node?: string; hostname?: string; target?: string; full?: boolean; storage?: string; description?: string; }>();
+      await lxcClone(Number(ctid), Number(newid), {
+        profile: globals.profile,
+        node: cmdOpts.node,
+        hostname: cmdOpts.hostname,
+        target: cmdOpts.target,
+        full: cmdOpts.full,
+        storage: cmdOpts.storage,
+        description: cmdOpts.description,
+        dryRun: !!globals.dryRun,
+        yes: !!globals.yes,
+      });
+    });
+
+  lxc.command('resize <ctid> <disk> <size>')
+    .description('Resize a container disk (e.g. rootfs, +10G or 50G)')
+    .option('--node <name>', 'Target node (auto-discovered if omitted)')
+    .action(async (ctid: string, disk: string, size: string, _opts, cmd: Command) => {
+      const globals = cmd.optsWithGlobals<{ profile?: string; dryRun?: boolean; }>();
+      await lxcResize(Number(ctid), disk, size, {
+        profile: globals.profile,
+        node: cmd.opts().node,
+        dryRun: !!globals.dryRun,
       });
     });
 

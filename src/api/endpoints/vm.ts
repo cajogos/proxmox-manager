@@ -131,3 +131,65 @@ export async function deleteSnapshot(client: ProxmoxClient, node: string, vmid: 
 export async function rollbackSnapshot(client: ProxmoxClient, node: string, vmid: number, name: string): Promise<void> {
   await client.post(`/nodes/${node}/qemu/${vmid}/snapshot/${name}/rollback`);
 }
+
+export interface CloneVMParams {
+  newid: number;
+  name?: string;
+  target?: string;
+  full?: boolean;
+  storage?: string;
+  description?: string;
+}
+
+export async function cloneVM(
+  client: ProxmoxClient,
+  node: string,
+  vmid: number,
+  params: CloneVMParams,
+): Promise<string> {
+  return client.post<string>(`/nodes/${node}/qemu/${vmid}/clone`, {
+    newid: params.newid,
+    ...(params.name ? { name: params.name } : {}),
+    ...(params.target ? { target: params.target } : {}),
+    ...(params.full !== undefined ? { full: params.full ? 1 : 0 } : {}),
+    ...(params.storage ? { storage: params.storage } : {}),
+    ...(params.description ? { description: params.description } : {}),
+  });
+}
+
+export async function resizeVMDisk(
+  client: ProxmoxClient,
+  node: string,
+  vmid: number,
+  disk: string,
+  size: string,
+): Promise<void> {
+  await client.put(`/nodes/${node}/qemu/${vmid}/resize`, { disk, size });
+}
+
+export async function getVMMigrationPreconditions(
+  client: ProxmoxClient,
+  node: string,
+  vmid: number,
+): Promise<Record<string, unknown>> {
+  return client.get<Record<string, unknown>>(`/nodes/${node}/qemu/${vmid}/migrate`);
+}
+
+export interface MigrateVMParams {
+  target: string;
+  online?: boolean;
+  'with-local-disks'?: boolean;
+}
+
+export async function migrateVM(
+  client: ProxmoxClient,
+  node: string,
+  vmid: number,
+  params: MigrateVMParams,
+): Promise<string> {
+  return client.post<string>(`/nodes/${node}/qemu/${vmid}/migrate`, {
+    target: params.target,
+    ...(params.online ? { online: 1 } : {}),
+    ...(params['with-local-disks'] ? { 'with-local-disks': 1 } : {}),
+  });
+}

@@ -95,6 +95,21 @@ export async function uploadStorageContent(
   await client.upload<unknown>(`/nodes/${node}/storage/${storage}/upload`, fd, onProgress);
 }
 
+export async function resolveStorageNode(client: ProxmoxClient, storage: string): Promise<string> {
+  const nodes = await getNodes(client);
+  for (const { node } of nodes) {
+    try {
+      const pools = await client.get<StorageInfo[]>(`/nodes/${node}/storage`);
+      if (pools.some(p => p.storage === storage)) {
+        return node;
+      }
+    } catch {
+      // node unreachable — skip
+    }
+  }
+  throw new Error(`Storage "${storage}" not found on any node. Use --node to specify.`);
+}
+
 export async function listAllBackups(client: ProxmoxClient): Promise<StorageContent[]> {
   const nodes = await getNodes(client);
   const results: StorageContent[] = [];

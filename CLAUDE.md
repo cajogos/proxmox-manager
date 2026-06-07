@@ -7,6 +7,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 pnpm build          # compile TypeScript → dist/
 pnpm typecheck      # type-check without emitting (run before every commit)
+pnpm test           # run Vitest test suite (once)
+pnpm test:watch     # run Vitest in watch mode
 pnpm cli            # run CLI via tsx (dev mode, no build needed)
 pnpm web            # run API server via tsx (dev mode)
 pnpm web:dev        # run API server + Vite dev server concurrently
@@ -28,7 +30,7 @@ There are no tests yet. Type-check is the primary correctness gate.
 
 ## Architecture
 
-**Stack:** TypeScript 6 (CommonJS, strict), Commander.js v15, Axios, Zod v4, chalk v4.
+**Stack:** TypeScript 6 (CommonJS, strict), Commander.js v15, Axios, Zod v4, chalk v4, ws v8 (WebSocket server), Vitest v4 (tests).
 
 **Entry point:** `src/index.ts` → `src/cli/program.ts` (Commander root + global flags) → command modules.
 
@@ -46,6 +48,8 @@ There are no tests yet. Type-check is the primary correctness gate.
 | API endpoints | `src/api/endpoints/network.ts` | Network API calls — list interfaces per node, get single interface detail |
 | API endpoints | `src/api/endpoints/access.ts` | Access API calls — users, groups, roles |
 | API endpoints | `src/api/endpoints/vzdump.ts` | Backup job API calls — list, get, create, delete scheduled jobs |
+| API endpoints | `src/api/endpoints/firewall.ts` | Firewall rule API calls — cluster-level, per-VM, per-LXC (list, create, delete) |
+| API endpoints | `src/api/endpoints/sdn.ts` | SDN API calls — list zones, VNets, subnets |
 | **Services** | `src/services/vm.ts` | VM business logic — `resolveVMNode()` for auto-discovery, service functions returning `CommandResult<T>` |
 | **Services** | `src/services/lxc.ts` | LXC business logic — mirrors vm.ts, adds `execLXCService()` |
 | **Services** | `src/services/node.ts` | Node business logic — 9 service functions; safeguards handled in CLI layer |
@@ -54,6 +58,8 @@ There are no tests yet. Type-check is the primary correctness gate.
 | **Services** | `src/services/network.ts` | Network business logic — 2 service functions |
 | **Services** | `src/services/access.ts` | Access business logic — 4 service functions (users, groups, roles) |
 | **Services** | `src/services/vzdump.ts` | Backup job business logic — 4 service functions |
+| **Services** | `src/services/firewall.ts` | Firewall business logic — cluster, VM, LXC rule CRUD |
+| **Services** | `src/services/sdn.ts` | SDN business logic — list zones, VNets, subnets |
 | Safeguards | `src/safeguards/` | Three independent guards run before every destructive action |
 | Audit log | `src/audit/logger.ts` | Appends one JSON line per action; `source` field distinguishes `"cli"` from `"web"` |
 | Output | `src/output/formatter.ts` | Renders `Record<string, unknown>[]` as table / json / csv; accepts `OutputOptions` for column alignment and summary line |
@@ -64,9 +70,13 @@ There are no tests yet. Type-check is the primary correctness gate.
 | Web server | `src/server/index.ts` | Bootstrap: loads config, mounts middleware and routers, listens on `SERVER_PORT` (default 3000) |
 | Web middleware | `src/server/middleware/profile.ts` | Resolves profile from `?profile=` query or `X-Profile` header; attaches to `req.profileName` |
 | Web middleware | `src/server/middleware/error.ts` | Express 5 catch-all error handler: `(err, req, res, next)` → `{ ok: false, error }` |
-| Web routes | `src/server/routes/` | Route files: `vms.ts`, `lxc.ts`, `nodes.ts`, `storage.ts` — each exports a factory `xxxRouter(config)` |
+| Web routes | `src/server/routes/` | Route files: `vms.ts`, `lxc.ts`, `nodes.ts`, `storage.ts`, `cluster.ts`, `network.ts`, `access.ts`, `backup.ts` — each exports a factory `xxxRouter(config)` |
+| SSE | `src/server/sse.ts` | `GET /api/tasks/:upid/stream` — polls Proxmox task status every 1 s, streams as Server-Sent Events until stopped |
+| WebSocket terminal | `src/server/terminal.ts` | `attachTerminalWebSocket(server, config)` — upgrades HTTP to WS at `/ws/terminal/{ctid}`; relays to Proxmox termproxy + vncwebsocket |
 | Web UI | `web/` | React + Vite frontend; own `package.json` + `tsconfig.json`; workspace member via `pnpm-workspace.yaml` |
-| Web API client | `web/src/api/client.ts` | Typed `fetch` wrappers: `getVMs`, `getLXC`, `getNodes`, `getStorage`, `vmAction`, `lxcAction` |
+| Web API client | `web/src/api/client.ts` | Typed `fetch` wrappers for all API endpoints (VMs, LXC, nodes, storage, cluster, network, access, backup) |
+| Web terminal | `web/src/components/Terminal.tsx` | xterm.js component that opens a WebSocket to `/ws/terminal/{ctid}` |
+| Tests | `tests/` | Vitest unit tests; run with `pnpm test`. Mock endpoint modules with `vi.hoisted()` + `vi.mock()` |
 
 ### Safeguard pipeline (destructive commands only)
 

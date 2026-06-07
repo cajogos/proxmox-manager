@@ -10,6 +10,9 @@ import { vmReboot } from './reboot';
 import { vmSuspend } from './suspend';
 import { vmResume } from './resume';
 import { vmDelete } from './delete';
+import { vmClone } from './clone';
+import { vmResize } from './resize';
+import { vmMigrate } from './migrate';
 import { registerVMSnapshotCommands } from './snapshot/index';
 
 export function registerVMCommands(program: Command): void {
@@ -139,6 +142,60 @@ export function registerVMCommands(program: Command): void {
       await vmDelete(Number(vmid), {
         profile: globals.profile,
         node: cmd.opts().node,
+        dryRun: !!globals.dryRun,
+        yes: !!globals.yes,
+      });
+    });
+
+  vm.command('clone <vmid> <newid>')
+    .description('Clone a VM to a new VM ID')
+    .option('--node <name>', 'Source node (auto-discovered if omitted)')
+    .option('--name <name>', 'Name for the cloned VM')
+    .option('--target <node>', 'Target node for the clone')
+    .option('--full', 'Full clone (independent copy, not linked)')
+    .option('--storage <storage>', 'Storage pool for the clone')
+    .option('--description <text>', 'Description for the cloned VM')
+    .action(async (vmid: string, newid: string, _opts, cmd: Command) => {
+      const globals = cmd.optsWithGlobals<{ profile?: string; dryRun?: boolean; yes?: boolean; }>();
+      const cmdOpts = cmd.opts<{ node?: string; name?: string; target?: string; full?: boolean; storage?: string; description?: string; }>();
+      await vmClone(Number(vmid), Number(newid), {
+        profile: globals.profile,
+        node: cmdOpts.node,
+        name: cmdOpts.name,
+        target: cmdOpts.target,
+        full: cmdOpts.full,
+        storage: cmdOpts.storage,
+        description: cmdOpts.description,
+        dryRun: !!globals.dryRun,
+        yes: !!globals.yes,
+      });
+    });
+
+  vm.command('resize <vmid> <disk> <size>')
+    .description('Resize a VM disk (e.g. scsi0, +10G or 50G)')
+    .option('--node <name>', 'Target node (auto-discovered if omitted)')
+    .action(async (vmid: string, disk: string, size: string, _opts, cmd: Command) => {
+      const globals = cmd.optsWithGlobals<{ profile?: string; dryRun?: boolean; }>();
+      await vmResize(Number(vmid), disk, size, {
+        profile: globals.profile,
+        node: cmd.opts().node,
+        dryRun: !!globals.dryRun,
+      });
+    });
+
+  vm.command('migrate <vmid> <target-node>')
+    .description('Migrate a VM to another node')
+    .option('--node <name>', 'Source node (auto-discovered if omitted)')
+    .option('--online', 'Live migration without downtime')
+    .option('--with-local-disks', 'Migrate local disks (advanced)')
+    .action(async (vmid: string, targetNode: string, _opts, cmd: Command) => {
+      const globals = cmd.optsWithGlobals<{ profile?: string; dryRun?: boolean; yes?: boolean; }>();
+      const cmdOpts = cmd.opts<{ node?: string; online?: boolean; withLocalDisks?: boolean; }>();
+      await vmMigrate(Number(vmid), targetNode, {
+        profile: globals.profile,
+        node: cmdOpts.node,
+        online: cmdOpts.online,
+        withLocalDisks: cmdOpts.withLocalDisks,
         dryRun: !!globals.dryRun,
         yes: !!globals.yes,
       });

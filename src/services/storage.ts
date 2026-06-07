@@ -8,6 +8,7 @@ import {
   deleteStorageContent,
   uploadStorageContent,
   listAllBackups,
+  resolveStorageNode,
   StorageInfo,
   StorageContent,
 } from '../api/endpoints/storage';
@@ -42,12 +43,10 @@ export async function getStorageStatusService(
   opts: StorageOpts,
 ): Promise<CommandResult<StorageInfo>> {
   try {
-    if (!opts.node) {
-      return { ok: false, error: 'Required flag --node <name> is missing.' };
-    }
     const { profile } = resolveProfile(config, opts.profile);
     const client = new ProxmoxClient(profile);
-    const data = await getStorageStatus(client, opts.node, storage);
+    const node = opts.node ?? await resolveStorageNode(client, storage);
+    const data = await getStorageStatus(client, node, storage);
     return { ok: true, data };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : String(e) };
@@ -60,12 +59,10 @@ export async function listStorageContentService(
   opts: ListStorageContentOpts,
 ): Promise<CommandResult<StorageContent[]>> {
   try {
-    if (!opts.node) {
-      return { ok: false, error: 'Required flag --node <name> is missing.' };
-    }
     const { profile } = resolveProfile(config, opts.profile);
     const client = new ProxmoxClient(profile);
-    const data = await listStorageContent(client, opts.node, storage, opts.contentType);
+    const node = opts.node ?? await resolveStorageNode(client, storage);
+    const data = await listStorageContent(client, node, storage, opts.contentType);
     return { ok: true, data };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : String(e) };
@@ -79,12 +76,10 @@ export async function deleteStorageContentService(
   opts: StorageOpts,
 ): Promise<CommandResult<void>> {
   try {
-    if (!opts.node) {
-      return { ok: false, error: 'Required flag --node <name> is missing.' };
-    }
     const { profile } = resolveProfile(config, opts.profile);
     const client = new ProxmoxClient(profile);
-    await deleteStorageContent(client, opts.node, storage, volid);
+    const node = opts.node ?? await resolveStorageNode(client, storage);
+    await deleteStorageContent(client, node, storage, volid);
     return { ok: true, data: undefined };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : String(e) };
@@ -100,12 +95,10 @@ export async function uploadStorageContentService(
   onProgress?: (pct: number) => void,
 ): Promise<CommandResult<void>> {
   try {
-    if (!opts.node) {
-      return { ok: false, error: 'Required flag --node <name> is missing.' };
-    }
     const { profile } = resolveProfile(config, opts.profile);
     const client = new ProxmoxClient(profile);
-    await uploadStorageContent(client, opts.node, storage, filePath, contentType, onProgress);
+    const node = opts.node ?? await resolveStorageNode(client, storage);
+    await uploadStorageContent(client, node, storage, filePath, contentType, onProgress);
     return { ok: true, data: undefined };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : String(e) };

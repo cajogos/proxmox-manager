@@ -141,3 +141,53 @@ export function execLXC(host: string, vmid: number, command: string[]): ExecResu
     exitCode: result.status ?? 1,
   };
 }
+
+export interface CloneLXCParams {
+  newid: number;
+  hostname?: string;
+  target?: string;
+  full?: boolean;
+  storage?: string;
+  description?: string;
+}
+
+export async function cloneLXC(
+  client: ProxmoxClient,
+  node: string,
+  vmid: number,
+  params: CloneLXCParams,
+): Promise<string> {
+  return client.post<string>(`/nodes/${node}/lxc/${vmid}/clone`, {
+    newid: params.newid,
+    ...(params.hostname ? { hostname: params.hostname } : {}),
+    ...(params.target ? { target: params.target } : {}),
+    ...(params.full !== undefined ? { full: params.full ? 1 : 0 } : {}),
+    ...(params.storage ? { storage: params.storage } : {}),
+    ...(params.description ? { description: params.description } : {}),
+  });
+}
+
+export async function resizeLXCDisk(
+  client: ProxmoxClient,
+  node: string,
+  vmid: number,
+  disk: string,
+  size: string,
+): Promise<void> {
+  await client.put(`/nodes/${node}/lxc/${vmid}/resize`, { disk, size });
+}
+
+export interface TermProxyResult {
+  ticket: string;
+  port: string;
+  upid: string;
+  user: string;
+}
+
+export async function createLXCTermProxy(
+  client: ProxmoxClient,
+  node: string,
+  vmid: number,
+): Promise<TermProxyResult> {
+  return client.post<TermProxyResult>(`/nodes/${node}/lxc/${vmid}/termproxy`);
+}

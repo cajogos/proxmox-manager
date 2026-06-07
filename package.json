@@ -14,7 +14,9 @@
     "web:server": "tsx src/server/index.ts",
     "web:ui": "cd web && pnpm dev",
     "web:dev": "concurrently \"pnpm web:server\" \"pnpm web:ui\"",
-    "build:web": "cd web && pnpm build"
+    "build:web": "cd web && pnpm build",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [
     "proxmox",
@@ -32,14 +34,17 @@
     "express": "^5.2.1",
     "ora": "^5.4.1",
     "prompts": "^2.4.2",
+    "ws": "^8.21.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^25.9.2",
     "@types/prompts": "^2.4.9",
+    "@types/ws": "^8.18.1",
     "concurrently": "^9.0.0",
     "tsx": "^4.22.4",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
   }
 }

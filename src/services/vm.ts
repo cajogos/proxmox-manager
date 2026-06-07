@@ -16,6 +16,12 @@ import {
   createSnapshot,
   deleteSnapshot,
   rollbackSnapshot,
+  cloneVM,
+  resizeVMDisk,
+  migrateVM,
+  getVMMigrationPreconditions,
+  CloneVMParams,
+  MigrateVMParams,
   NodeVMInfo,
   VMStatusDetail,
   VMConfig,
@@ -186,3 +192,58 @@ export async function rollbackSnapshotService(
     return { ok: false, error: e instanceof Error ? e.message : String(e) };
   }
 }
+
+export async function cloneVMService(
+  config: Config,
+  vmid: number,
+  params: CloneVMParams,
+  opts: VMActionOpts,
+): Promise<CommandResult<string>> {
+  try {
+    const { profile } = resolveProfile(config, opts.profile);
+    const client = new ProxmoxClient(profile);
+    const node = await resolveVMNode(client, vmid, opts.node);
+    const upid = await cloneVM(client, node, vmid, params);
+    return { ok: true, data: upid };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+export async function resizeVMDiskService(
+  config: Config,
+  vmid: number,
+  disk: string,
+  size: string,
+  opts: VMActionOpts,
+): Promise<CommandResult<void>> {
+  try {
+    const { profile } = resolveProfile(config, opts.profile);
+    const client = new ProxmoxClient(profile);
+    const node = await resolveVMNode(client, vmid, opts.node);
+    await resizeVMDisk(client, node, vmid, disk, size);
+    return { ok: true, data: undefined };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+export async function migrateVMService(
+  config: Config,
+  vmid: number,
+  params: MigrateVMParams,
+  opts: VMActionOpts,
+): Promise<CommandResult<{ upid: string; preconditions: Record<string, unknown> }>> {
+  try {
+    const { profile } = resolveProfile(config, opts.profile);
+    const client = new ProxmoxClient(profile);
+    const node = await resolveVMNode(client, vmid, opts.node);
+    const preconditions = await getVMMigrationPreconditions(client, node, vmid);
+    const upid = await migrateVM(client, node, vmid, params);
+    return { ok: true, data: { upid, preconditions } };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+export { resolveVMNode };

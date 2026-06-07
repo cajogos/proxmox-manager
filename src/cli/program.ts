@@ -7,6 +7,10 @@ import { registerClusterCommands } from './commands/cluster/index';
 import { registerNetworkCommands } from './commands/network/index';
 import { registerAccessCommands } from './commands/access/index';
 import { registerBackupCommands } from './commands/backup/index';
+import { registerFirewallCommands } from './commands/firewall/index';
+import { registerSDNCommands } from './commands/sdn/index';
+import { registerConfigCommands } from './commands/config/index';
+import { doctor } from './commands/doctor';
 
 export function createProgram(): Command {
   const program = new Command();
@@ -28,6 +32,16 @@ export function createProgram(): Command {
   registerNetworkCommands(program);
   registerAccessCommands(program);
   registerBackupCommands(program);
+  registerFirewallCommands(program);
+  registerSDNCommands(program);
+  registerConfigCommands(program);
+
+  program
+    .command('doctor')
+    .description('Check configuration and connectivity to all profiles')
+    .action(async () => {
+      await doctor();
+    });
 
   program.action(() => {
     program.outputHelp();
