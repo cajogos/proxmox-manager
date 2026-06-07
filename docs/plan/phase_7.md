@@ -40,4 +40,6 @@ _To be detailed at the start of each sub-phase._
 - [ ] 6g — Replication jobs
 - [ ] 6h — SDN
 - [ ] Full API surface audit (compare against Proxmox API docs)
-- [ ] README.md updated with Phase 6 capabilities
+- [ ] `README.md` updated — phase marked ✅, features list updated
+- [ ] `docs/COMMANDS.md` updated — example output and new commands documented
+- [ ] `CLAUDE.md` updated — new layers, helpers, or patterns reflected

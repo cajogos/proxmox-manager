@@ -91,4 +91,6 @@
 - [x] `pnpm start -- vm list --format table` — VMs listed
 - [x] `pnpm start -- vm list --format json` — JSON output verified
 - [x] `~/.proxmox-manager/audit.log` written after each command
-- [x] README.md updated with Phase 1 tutorial
+- [x] `README.md` updated — phase marked ✅, features list updated
+- [x] `docs/COMMANDS.md` updated — example output and new commands documented
+- [x] `CLAUDE.md` updated — new layers, helpers, or patterns reflected

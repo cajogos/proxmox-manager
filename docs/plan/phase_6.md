@@ -31,4 +31,6 @@ _To be detailed at the start of Phase 5._
 - [ ] Upload shows progress
 - [ ] All actions in audit log
 - [ ] `pnpm build` + `pnpm typecheck` pass
-- [ ] README.md updated with Phase 5 tutorial
+- [ ] `README.md` updated — phase marked ✅, features list updated
+- [ ] `docs/COMMANDS.md` updated — example output and new commands documented
+- [ ] `CLAUDE.md` updated — new layers, helpers, or patterns reflected

@@ -71,15 +71,17 @@ All non-data output uses a fixed palette — applied in CLI command wrappers and
 
 ## Checklist
 
-- [ ] `ora` installed
-- [ ] `src/output/colors.ts` — status and message palette helpers
-- [ ] `src/output/humanize.ts` — MB/bytes/seconds formatters
-- [ ] `src/output/spinner.ts` — ora wrapper
-- [ ] `src/output/formatter.ts` — compact layout, right-aligned numeric columns, summary line, boolean rendering
-- [ ] `vm list` — spinner active during API call, status colored, memory humanized, template column compact
-- [ ] JSON output clean (no ANSI in any field)
-- [ ] CSV output clean
-- [ ] `--no-color` verified (run with `NO_COLOR=1 ./pm vm list`)
-- [ ] Non-TTY verified (run `./pm vm list | cat` — no spinner, no ANSI)
-- [ ] `pnpm build` + `pnpm typecheck` pass
-- [ ] README.md updated with Phase 8 screenshot/example
+- [x] `ora` installed
+- [x] `src/output/colors.ts` — status and message palette helpers
+- [x] `src/output/humanize.ts` — MB/bytes/seconds formatters
+- [x] `src/output/spinner.ts` — ora wrapper
+- [x] `src/output/formatter.ts` — compact layout, right-aligned numeric columns, summary line, boolean rendering
+- [x] `vm list` — spinner active during API call, status colored, memory humanized, template column compact
+- [x] JSON output clean (no ANSI in any field)
+- [x] CSV output clean
+- [x] `--no-color` verified (run with `NO_COLOR=1 ./pm vm list`)
+- [x] Non-TTY verified (run `./pm vm list | cat` — no spinner, no ANSI)
+- [x] `pnpm build` + `pnpm typecheck` pass
+- [x] `README.md` updated — phase marked ✅, features list updated
+- [x] `docs/COMMANDS.md` updated — example output reflects new table format
+- [x] `CLAUDE.md` updated — output conventions and new helpers documented

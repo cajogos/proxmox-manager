@@ -15,6 +15,7 @@ A safe, audited CLI for managing Proxmox VE from your terminal. Built with TypeS
 - **Dry-run mode** — see exactly what would happen before it does
 - **Protected resources** — config-driven list of VMs/nodes/containers that cannot be touched
 - **Flexible output** — `--format table|json|csv` on every listing command
+- **Polished CLI** — spinner during API calls, colored status, human-readable memory (GB), compact tables, summary line
 
 ---
 
@@ -101,7 +102,7 @@ See [docs/COMMANDS.md](docs/COMMANDS.md) for the full command reference.
 | Phase | Status | Description |
 |---|---|---|
 | [Phase 1](docs/plan/phase_1.md) | ✅ Complete | Core infrastructure + VM listing |
-| [Phase 2](docs/plan/phase_2.md) | 🔲 Pending | CLI aesthetics (colors, spinners, compact tables, human-readable values) |
+| [Phase 2](docs/plan/phase_2.md) | ✅ Complete | CLI aesthetics (colors, spinners, compact tables, human-readable values) |
 | [Phase 3](docs/plan/phase_3.md) | 🔲 Pending | Full VM lifecycle management |
 | [Phase 4](docs/plan/phase_4.md) | 🔲 Pending | LXC container management |
 | [Phase 5](docs/plan/phase_5.md) | 🔲 Pending | Node management |

@@ -3,7 +3,12 @@ import chalk from 'chalk';
 
 export type OutputFormat = 'table' | 'json' | 'csv';
 
-export function output(data: Record<string, unknown>[], format: OutputFormat): void {
+export interface OutputOptions {
+  colAligns?: ('left' | 'right' | 'center')[];
+  summary?: string;
+}
+
+export function output(data: Record<string, unknown>[], format: OutputFormat, opts?: OutputOptions): void {
   if (data.length === 0) {
     console.log(chalk.gray('No results found.'));
     return;
@@ -18,16 +23,17 @@ export function output(data: Record<string, unknown>[], format: OutputFormat): v
       break;
     case 'table':
     default:
-      outputTable(data);
+      outputTable(data, opts);
       break;
   }
 }
 
-function outputTable(data: Record<string, unknown>[]): void {
+function outputTable(data: Record<string, unknown>[], opts?: OutputOptions): void {
   const headers = Object.keys(data[0]);
   const table = new Table({
     head: headers.map(h => chalk.cyan(h)),
-    style: { head: [], border: [] },
+    style: { head: [], border: [], compact: true },
+    colAligns: opts?.colAligns,
   });
 
   for (const row of data) {
@@ -35,6 +41,10 @@ function outputTable(data: Record<string, unknown>[]): void {
   }
 
   console.log(table.toString());
+
+  if (opts?.summary) {
+    console.log(chalk.gray(opts.summary));
+  }
 }
 
 function outputJSON(data: Record<string, unknown>[]): void {

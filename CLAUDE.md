@@ -38,7 +38,10 @@ There are no tests yet. Type-check is the primary correctness gate.
 | **Services** | `src/services/` | **Shared business logic** — take `(config, profileName?)`, return `CommandResult<T>`, used by both CLI and web server |
 | Safeguards | `src/safeguards/` | Three independent guards run before every destructive action |
 | Audit log | `src/audit/logger.ts` | Appends one JSON line per action; `source` field distinguishes `"cli"` from `"web"` |
-| Output | `src/output/formatter.ts` | Renders `Record<string, unknown>[]` as table / json / csv |
+| Output | `src/output/formatter.ts` | Renders `Record<string, unknown>[]` as table / json / csv; accepts `OutputOptions` for column alignment and summary line |
+| Output helpers | `src/output/colors.ts` | `statusColor()`, `successMsg()`, `errorMsg()`, `warnMsg()`, `dryRunMsg()` |
+| Output helpers | `src/output/humanize.ts` | `humanMB()`, `humanSeconds()`, `humanBytes()` |
+| Output helpers | `src/output/spinner.ts` | `startSpinner(text)` — thin ora v5 wrapper; auto-suppressed when not a TTY |
 | CLI commands | `src/cli/commands/` | Thin wrappers: call a service, format the result, write the audit entry |
 | Web server | `src/server/` | Express server exposing services as REST endpoints |
 
@@ -71,4 +74,21 @@ Follow the pattern in `src/cli/commands/vm/` and `src/services/vm.ts`:
 
 ### Development phases
 
-Implementation is split into phases tracked in `docs/plan/phase_*.md`. Each phase doc has a **Requirements** section at the top and a tickable **Checklist** at the bottom. After completing any phase, update the checklist, write a mini-tutorial, and update `README.md`.
+Implementation is split into phases tracked in `docs/plan/phase_*.md`. Each phase doc has a **Requirements** section at the top and a tickable **Checklist** at the bottom. After completing any phase:
+
+1. Tick all checklist items in `docs/plan/phase_N.md`
+2. Update `README.md` — mark the phase ✅ Complete in the phases table; add any new features to the Features list
+3. Update `docs/COMMANDS.md` — update example output and add new commands
+4. Update `CLAUDE.md` — reflect new layers, helpers, or patterns added
+
+### CLI output conventions (Phase 2+)
+
+Every command must follow this pattern:
+
+- **Spinner** — `startSpinner(text)` before any API call; `spinner.stop()` immediately after
+- **Status color** — use `statusColor(status)` from `src/output/colors.ts`; apply only for table format
+- **Humanize** — memory via `humanMB(mb)`, uptime via `humanSeconds(s)`, disk via `humanBytes(b)`
+- **Boolean columns** — template/flag fields: `chalk.dim('label')` (table) or plain string (json/csv), `-` for false
+- **Summary line** — compute count + per-status breakdown; pass as `opts.summary` to `output()`
+- **Column alignment** — pass `colAligns` to `output()`: right-align numeric columns (IDs, counts, sizes)
+- **Message palette** — use `successMsg()`, `errorMsg()`, `warnMsg()`, `dryRunMsg()` for all non-data output

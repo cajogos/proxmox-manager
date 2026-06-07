@@ -51,4 +51,6 @@ _To be detailed at the start of Phase 2._
 - [ ] Safeguard pipeline verified on all destructive actions
 - [ ] All actions appear in audit log
 - [ ] `pnpm build` + `pnpm typecheck` pass
-- [ ] README.md updated with Phase 2 tutorial
+- [ ] `README.md` updated — phase marked ✅, features list updated
+- [ ] `docs/COMMANDS.md` updated — example output and new commands documented
+- [ ] `CLAUDE.md` updated — new layers, helpers, or patterns reflected

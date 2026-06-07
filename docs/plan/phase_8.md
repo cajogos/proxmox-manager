@@ -69,4 +69,6 @@ _To be detailed at the start of Phase 7._
 - [ ] Audit log viewer page
 - [ ] Single start command (`pnpm run web` or similar)
 - [ ] `pnpm build` compiles both CLI and Web UI
-- [ ] README.md and docs/COMMANDS.md updated with Phase 7 tutorial
+- [ ] `README.md` updated — phase marked ✅, features list updated
+- [ ] `docs/COMMANDS.md` updated — example output and new commands documented
+- [ ] `CLAUDE.md` updated — new layers, helpers, or patterns reflected
