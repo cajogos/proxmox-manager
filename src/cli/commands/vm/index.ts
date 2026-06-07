@@ -5,7 +5,8 @@ import { OutputFormat } from '../../../output/formatter';
 export function registerVMCommands(program: Command): void {
   const vm = program
     .command('vm')
-    .description('Manage QEMU virtual machines');
+    .description('Manage QEMU virtual machines')
+    .action(function () { vm.outputHelp(); });
 
   vm.command('list')
     .description('List all VMs across all nodes')
