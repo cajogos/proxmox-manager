@@ -20,6 +20,7 @@ import {
   resizeVMDisk,
   migrateVM,
   getVMMigrationPreconditions,
+  getVMIPs,
   CloneVMParams,
   MigrateVMParams,
   NodeVMInfo,
@@ -241,6 +242,22 @@ export async function migrateVMService(
     const preconditions = await getVMMigrationPreconditions(client, node, vmid);
     const upid = await migrateVM(client, node, vmid, params);
     return { ok: true, data: { upid, preconditions } };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+export async function getVMIPsService(
+  config: Config,
+  vmid: number,
+  opts: VMActionOpts,
+): Promise<CommandResult<string[]>> {
+  try {
+    const { profile } = resolveProfile(config, opts.profile);
+    const client = new ProxmoxClient(profile);
+    const node = await resolveVMNode(client, vmid, opts.node);
+    const ips = await getVMIPs(client, node, vmid);
+    return { ok: true, data: ips };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : String(e) };
   }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getLXC, lxcAction, type LXCInfo } from '@/api/client';
+import { getLXC, getLXCIPs, lxcAction, type LXCInfo } from '@/api/client';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -10,13 +10,15 @@ function statusBadge(status: string) {
   return <Badge variant="secondary">{status}</Badge>;
 }
 
-function humanMB(mb?: number): string {
-  if (!mb) return '-';
-  return mb >= 1024 ? `${(mb / 1024).toFixed(1)} GB` : `${mb} MB`;
+function humanBytes(bytes?: number): string {
+  if (!bytes) return '-';
+  const gb = bytes / (1024 ** 3);
+  return gb >= 1 ? `${gb.toFixed(1)} GB` : `${(bytes / (1024 ** 2)).toFixed(0)} MB`;
 }
 
 export default function LXC() {
   const [containers, setContainers] = useState<LXCInfo[]>([]);
+  const [ips, setIPs] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,6 +28,16 @@ export default function LXC() {
     setLoading(false);
     if (!result.ok) { setError(result.error); return; }
     setContainers(result.data);
+    setIPs({});
+    const running = result.data.filter(c => c.status === 'running');
+    void Promise.all(
+      running.map(async c => {
+        const r = await getLXCIPs(c.vmid);
+        if (r.ok && r.data.length > 0) {
+          setIPs(prev => ({ ...prev, [c.vmid]: r.data[0] }));
+        }
+      }),
+    );
   }
 
   useEffect(() => { void load(); }, []);
@@ -51,8 +63,10 @@ export default function LXC() {
             <TableHead>Name</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Node</TableHead>
+            <TableHead>IP</TableHead>
             <TableHead>CPUs</TableHead>
             <TableHead>Memory</TableHead>
+            <TableHead>Disk</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -63,8 +77,10 @@ export default function LXC() {
               <TableCell>{ct.name ?? '-'}</TableCell>
               <TableCell>{statusBadge(ct.status)}</TableCell>
               <TableCell>{ct.node}</TableCell>
+              <TableCell className="font-mono text-sm">{ips[ct.vmid] ?? (ct.status === 'running' ? <span className="text-muted-foreground">…</span> : '-')}</TableCell>
               <TableCell>{ct.cpus ?? '-'}</TableCell>
-              <TableCell>{humanMB(ct.maxmem != null ? ct.maxmem / (1024 * 1024) : undefined)}</TableCell>
+              <TableCell>{humanBytes(ct.maxmem)}</TableCell>
+              <TableCell>{humanBytes(ct.maxdisk)}</TableCell>
               <TableCell>
                 <div className="flex gap-2">
                   {ct.status === 'stopped' && (

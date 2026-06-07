@@ -20,6 +20,7 @@ import {
   cloneLXC,
   resizeLXCDisk,
   createLXCTermProxy,
+  getLXCIPs,
   CloneLXCParams,
   TermProxyResult,
   NodeLXCInfo,
@@ -260,6 +261,22 @@ export async function createLXCTermProxyService(
     const node = await resolveLXCNode(client, ctid, opts.node);
     const result = await createLXCTermProxy(client, node, ctid);
     return { ok: true, data: { ...result, node } };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+export async function getLXCIPsService(
+  config: Config,
+  ctid: number,
+  opts: { profile?: string; node?: string },
+): Promise<CommandResult<string[]>> {
+  try {
+    const { profile } = resolveProfile(config, opts.profile);
+    const client = new ProxmoxClient(profile);
+    const node = await resolveLXCNode(client, ctid, opts.node);
+    const ips = await getLXCIPs(client, node, ctid);
+    return { ok: true, data: ips };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : String(e) };
   }

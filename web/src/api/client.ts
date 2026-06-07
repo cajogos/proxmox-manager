@@ -27,6 +27,7 @@ export interface VMInfo {
   cpus?: number;
   maxmem?: number;
   mem?: number;
+  maxdisk?: number;
   uptime?: number;
   template?: number;
   tags?: string;
@@ -40,6 +41,7 @@ export interface LXCInfo {
   cpus?: number;
   maxmem?: number;
   mem?: number;
+  maxdisk?: number;
   uptime?: number;
 }
 
@@ -148,6 +150,10 @@ export function getVM(vmid: number, profile?: string): Promise<ApiResult<VMInfo>
   return apiFetch<VMInfo>(`/api/vms/${vmid}${qs(profile)}`);
 }
 
+export function getVMIPs(vmid: number, profile?: string): Promise<ApiResult<string[]>> {
+  return apiFetch<string[]>(`/api/vms/${vmid}/ips${qs(profile)}`);
+}
+
 export function vmAction(vmid: number, action: string, profile?: string): Promise<ApiResult<void>> {
   return apiFetch<void>(`/api/vms/${vmid}/${action}${qs(profile)}`, { method: 'POST' });
 }
@@ -160,6 +166,10 @@ export function getLXC(profile?: string): Promise<ApiResult<LXCInfo[]>> {
 
 export function lxcAction(ctid: number, action: string, profile?: string): Promise<ApiResult<void>> {
   return apiFetch<void>(`/api/lxc/${ctid}/${action}${qs(profile)}`, { method: 'POST' });
+}
+
+export function getLXCIPs(ctid: number, profile?: string): Promise<ApiResult<string[]>> {
+  return apiFetch<string[]>(`/api/lxc/${ctid}/ips${qs(profile)}`);
 }
 
 // --- Nodes ---

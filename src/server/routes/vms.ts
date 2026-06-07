@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { Config } from '../../config/types';
 import { audit } from '../../audit/logger';
-import { getVMs, getVMStatusService, vmActionService } from '../../services/vm';
+import { getVMs, getVMStatusService, vmActionService, getVMIPsService } from '../../services/vm';
 
 const VALID_ACTIONS = new Set(['start', 'stop', 'shutdown', 'reboot', 'suspend', 'resume']);
 
@@ -20,6 +20,13 @@ export function vmsRouter(config: Config): Router {
       error: result.ok ? null : result.error,
       source: 'web',
     });
+    if (!result.ok) { res.status(500).json({ ok: false, error: result.error }); return; }
+    res.json({ ok: true, data: result.data });
+  });
+
+  router.get('/:vmid/ips', async (req: Request, res: Response) => {
+    const vmid = parseInt(req.params['vmid'] as string, 10);
+    const result = await getVMIPsService(config, vmid, { profile: req.profileName });
     if (!result.ok) { res.status(500).json({ ok: false, error: result.error }); return; }
     res.json({ ok: true, data: result.data });
   });

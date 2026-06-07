@@ -191,3 +191,16 @@ export async function createLXCTermProxy(
 ): Promise<TermProxyResult> {
   return client.post<TermProxyResult>(`/nodes/${node}/lxc/${vmid}/termproxy`);
 }
+
+interface LXCNetInterface {
+  name: string;
+  inet?: string;
+  inet6?: string;
+}
+
+export async function getLXCIPs(client: ProxmoxClient, node: string, vmid: number): Promise<string[]> {
+  const ifaces = await client.get<LXCNetInterface[]>(`/nodes/${node}/lxc/${vmid}/interfaces`);
+  return (ifaces ?? [])
+    .filter(i => i.name !== 'lo' && i.inet)
+    .map(i => (i.inet as string).split('/')[0]);
+}

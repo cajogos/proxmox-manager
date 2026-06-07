@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getVMs, vmAction, type VMInfo } from '@/api/client';
+import { getVMs, getVMIPs, vmAction, type VMInfo } from '@/api/client';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -10,13 +10,15 @@ function statusBadge(status: string) {
   return <Badge variant="secondary">{status}</Badge>;
 }
 
-function humanMB(mb?: number): string {
-  if (!mb) return '-';
-  return mb >= 1024 ? `${(mb / 1024).toFixed(1)} GB` : `${mb} MB`;
+function humanBytes(bytes?: number): string {
+  if (!bytes) return '-';
+  const gb = bytes / (1024 ** 3);
+  return gb >= 1 ? `${gb.toFixed(1)} GB` : `${(bytes / (1024 ** 2)).toFixed(0)} MB`;
 }
 
 export default function VMs() {
   const [vms, setVMs] = useState<VMInfo[]>([]);
+  const [ips, setIPs] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,6 +28,16 @@ export default function VMs() {
     setLoading(false);
     if (!result.ok) { setError(result.error); return; }
     setVMs(result.data);
+    setIPs({});
+    const running = result.data.filter(v => v.status === 'running');
+    void Promise.all(
+      running.map(async v => {
+        const r = await getVMIPs(v.vmid);
+        if (r.ok && r.data.length > 0) {
+          setIPs(prev => ({ ...prev, [v.vmid]: r.data[0] }));
+        }
+      }),
+    );
   }
 
   useEffect(() => { void load(); }, []);
@@ -51,8 +63,10 @@ export default function VMs() {
             <TableHead>Name</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Node</TableHead>
+            <TableHead>IP</TableHead>
             <TableHead>CPUs</TableHead>
             <TableHead>Memory</TableHead>
+            <TableHead>Disk</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -63,8 +77,10 @@ export default function VMs() {
               <TableCell>{vm.name ?? '-'}</TableCell>
               <TableCell>{statusBadge(vm.status)}</TableCell>
               <TableCell>{vm.node}</TableCell>
+              <TableCell className="font-mono text-sm">{ips[vm.vmid] ?? (vm.status === 'running' ? <span className="text-muted-foreground">…</span> : '-')}</TableCell>
               <TableCell>{vm.cpus ?? '-'}</TableCell>
-              <TableCell>{humanMB(vm.maxmem != null ? vm.maxmem / (1024 * 1024) : undefined)}</TableCell>
+              <TableCell>{humanBytes(vm.maxmem)}</TableCell>
+              <TableCell>{humanBytes(vm.maxdisk)}</TableCell>
               <TableCell>
                 <div className="flex gap-2">
                   {vm.status === 'stopped' && (

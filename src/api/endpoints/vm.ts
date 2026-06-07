@@ -193,3 +193,20 @@ export async function migrateVM(
     ...(params['with-local-disks'] ? { 'with-local-disks': 1 } : {}),
   });
 }
+
+interface AgentNetworkInterface {
+  name: string;
+  'ip-addresses'?: { 'ip-address': string; 'ip-address-type': 'ipv4' | 'ipv6'; prefix: number }[];
+}
+
+export async function getVMIPs(client: ProxmoxClient, node: string, vmid: number): Promise<string[]> {
+  const result = await client.get<{ result: AgentNetworkInterface[] }>(
+    `/nodes/${node}/qemu/${vmid}/agent/network-get-interfaces`,
+  );
+  const ifaces = result?.result ?? [];
+  return ifaces
+    .filter(i => i.name !== 'lo')
+    .flatMap(i => (i['ip-addresses'] ?? []))
+    .filter(a => a['ip-address-type'] === 'ipv4')
+    .map(a => a['ip-address']);
+}
