@@ -53,7 +53,7 @@ app.use('/api', sseRouter(config));
 
 const webDist = path.resolve(__dirname, '../../web/dist');
 app.use(express.static(webDist));
-app.get('*', (_req, res) => {
+app.get('/{*path}', (_req, res) => {
   res.sendFile(path.join(webDist, 'index.html'));
 });
 
