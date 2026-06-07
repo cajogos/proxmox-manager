@@ -1,0 +1,37 @@
+{
+  "name": "proxmox-manager",
+  "version": "0.1.0",
+  "description": "Safe, audited Proxmox VE management CLI",
+  "main": "dist/index.js",
+  "bin": {
+    "proxmox-manager": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "tsx src/index.ts",
+    "dev": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "proxmox",
+    "homelab",
+    "cli",
+    "automation"
+  ],
+  "author": "Carlos Ferreira",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.17.0",
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.5",
+    "commander": "^15.0.0",
+    "prompts": "^2.4.2",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.2",
+    "@types/prompts": "^2.4.9",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
+  }
+}

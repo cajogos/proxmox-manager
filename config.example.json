@@ -1,0 +1,20 @@
+{
+  "defaultProfile": "homelab",
+  "auditLog": {
+    "path": "~/.proxmox-manager/audit.log"
+  },
+  "profiles": {
+    "homelab": {
+      "host": "192.168.1.180",
+      "port": 8006,
+      "API_TOKEN_ID": "user@pam!token-name",
+      "API_TOKEN_SECRET": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "rejectUnauthorized": false,
+      "safeguards": {
+        "protectedVMs": [],
+        "protectedNodes": [],
+        "protectedContainers": []
+      }
+    }
+  }
+}
