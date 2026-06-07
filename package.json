@@ -10,11 +10,7 @@
     "build": "tsc",
     "cli": "tsx src/index.ts",
     "web": "tsx src/server/index.ts",
-    "typecheck": "tsc --noEmit",
-    "vm": "tsx src/index.ts vm",
-    "lxc": "tsx src/index.ts lxc",
-    "node": "tsx src/index.ts node",
-    "storage": "tsx src/index.ts storage"
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [
     "proxmox",
