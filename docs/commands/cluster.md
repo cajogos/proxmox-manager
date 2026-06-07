@@ -2,7 +2,7 @@
 
 ## `cluster status`
 
-Show the status of all nodes in the Proxmox cluster.
+Show the membership and online state of all nodes in the Proxmox cluster, including node type, ID, IP address, and quorum information.
 
 ```bash
 ./pm cluster status
@@ -19,7 +19,7 @@ Show the status of all nodes in the Proxmox cluster.
 
 ## `cluster resources`
 
-List all cluster resources. Optionally filter by type.
+List all resources known to the cluster — VMs, containers, nodes, storage pools — in a single unified view. Optionally filter by resource type.
 
 ```bash
 ./pm cluster resources
@@ -30,7 +30,7 @@ List all cluster resources. Optionally filter by type.
 
 ## `cluster ha`
 
-Show HA status for all managed resources.
+Show the High Availability status of all HA-managed resources, including their current state, assigned node, and CRM/LRM state.
 
 ```bash
 ./pm cluster ha

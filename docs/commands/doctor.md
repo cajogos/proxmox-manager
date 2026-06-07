@@ -2,7 +2,7 @@
 
 ## `doctor`
 
-Connectivity test + version check + config summary in one command. Good first-run experience.
+A full first-run health check that combines config validation, connectivity testing, and a live cluster summary in one command. Unlike `config check`, it also fetches node-level detail (PVE version, CPU, memory, disk, uptime) for every reachable node.
 
 ```bash
 ./pm doctor
@@ -36,4 +36,4 @@ Cluster — "homelab"
 ✓ All profiles connected successfully.
 ```
 
-Exits non-zero if any profile fails.
+Exits with a non-zero code if any profile fails.

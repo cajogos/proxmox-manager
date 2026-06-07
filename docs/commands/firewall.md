@@ -1,10 +1,12 @@
 # Firewall Commands
 
-Manage Proxmox firewall rules at the cluster level, per VM, and per LXC container.
+Manage Proxmox firewall rules at the cluster level, per VM, and per LXC container. Rules are applied in order by position index (0-based).
 
 ## Cluster Firewall
 
 ### `firewall cluster list`
+
+List all firewall rules applied at the cluster level, showing position, action, direction, and match criteria.
 
 ```bash
 ./pm firewall cluster list
@@ -12,7 +14,7 @@ Manage Proxmox firewall rules at the cluster level, per VM, and per LXC containe
 
 ### `firewall cluster create`
 
-Add a rule to the cluster firewall.
+Add a new rule to the cluster firewall. At minimum, `--action` and `--type` are required.
 
 ```bash
 ./pm firewall cluster create --action ACCEPT --type in --proto tcp --dport 22
@@ -23,19 +25,19 @@ Add a rule to the cluster firewall.
 | Flag | Description |
 |---|---|
 | `--action <action>` | `ACCEPT`, `DROP`, or `REJECT` |
-| `--type <dir>` | `in` or `out` |
+| `--type <dir>` | Direction: `in` or `out` |
 | `--source <addr>` | Source address/CIDR |
 | `--dest <addr>` | Destination address/CIDR |
 | `--proto <proto>` | Protocol: `tcp`, `udp`, `icmp`, etc. |
-| `--dport <port>` | Destination port or range |
+| `--dport <port>` | Destination port or range (e.g. `80`, `8000:8080`) |
 | `--sport <port>` | Source port or range |
-| `--macro <name>` | Proxmox firewall macro (e.g. `SSH`, `HTTP`) |
-| `--comment <text>` | Rule comment |
-| `--enable` | Enable rule immediately |
+| `--macro <name>` | Proxmox firewall macro (e.g. `SSH`, `HTTP`, `HTTPS`) |
+| `--comment <text>` | Human-readable label for the rule |
+| `--enable` | Enable the rule immediately on creation |
 
 ### `firewall cluster delete <pos>`
 
-Delete a cluster firewall rule by its position index.
+Delete the cluster firewall rule at the given position index. All subsequent rules shift up by one.
 
 ```bash
 ./pm firewall cluster delete 0
@@ -45,6 +47,8 @@ Delete a cluster firewall rule by its position index.
 
 ### `firewall vm list <vmid>`
 
+List all firewall rules for a specific VM.
+
 ```bash
 ./pm firewall vm list 100
 ./pm firewall vm list 100 --node pve
@@ -52,13 +56,15 @@ Delete a cluster firewall rule by its position index.
 
 ### `firewall vm create <vmid>`
 
-Add a rule to a VM's firewall. Accepts the same flags as `firewall cluster create`.
+Add a firewall rule to a VM. Accepts the same flags as `firewall cluster create`.
 
 ```bash
 ./pm firewall vm create 100 --action ACCEPT --type in --proto tcp --dport 80
 ```
 
 ### `firewall vm delete <vmid> <pos>`
+
+Delete a VM firewall rule by position index.
 
 ```bash
 ./pm firewall vm delete 100 0
@@ -68,19 +74,23 @@ Add a rule to a VM's firewall. Accepts the same flags as `firewall cluster creat
 
 ### `firewall lxc list <ctid>`
 
+List all firewall rules for a specific LXC container.
+
 ```bash
 ./pm firewall lxc list 200
 ```
 
 ### `firewall lxc create <ctid>`
 
-Add a rule to a container's firewall. Accepts the same flags as `firewall cluster create`.
+Add a firewall rule to a container. Accepts the same flags as `firewall cluster create`.
 
 ```bash
 ./pm firewall lxc create 200 --action ACCEPT --type in --proto tcp --dport 443
 ```
 
 ### `firewall lxc delete <ctid> <pos>`
+
+Delete a container firewall rule by position index.
 
 ```bash
 ./pm firewall lxc delete 200 0

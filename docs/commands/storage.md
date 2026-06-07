@@ -2,6 +2,8 @@
 
 ## `storage list`
 
+List all storage pools across the cluster — type, node, capacity, usage percentage, and supported content types. Pools that appear on multiple nodes are deduplicated.
+
 ```bash
 ./pm storage list
 ```
@@ -18,7 +20,7 @@
 
 ## `storage status <storage>`
 
-Requires `--node <name>`.
+Show detailed status for a single storage pool on a specific node, including type, path, and enabled content types. Requires `--node <name>`.
 
 ```bash
 ./pm storage status local --node pve
@@ -26,16 +28,17 @@ Requires `--node <name>`.
 
 ## `storage content list <storage>`
 
-Requires `--node <name>`. Optionally filter by `--type iso|vztmpl|backup`.
+List all content items (ISOs, templates, backups, disk images) inside a storage pool. Requires `--node <name>`. Filter by type with `--type`.
 
 ```bash
 ./pm storage content list local --node pve
 ./pm storage content list local --node pve --type iso
+./pm storage content list local --node pve --type backup
 ```
 
 ## `storage content upload <storage> <file>`
 
-Requires `--node <name>`. Shows live upload progress. Default content type is `iso`; use `--content vztmpl` for templates.
+Upload a local file to a storage pool. Shows live upload progress via the spinner. Requires `--node <name>`. Default content type is `iso`; use `--content vztmpl` for container templates.
 
 ```bash
 ./pm storage content upload local ubuntu-24.04.iso --node pve
@@ -44,7 +47,7 @@ Requires `--node <name>`. Shows live upload progress. Default content type is `i
 
 ## `storage content delete <storage> <volid>`
 
-Requires `--node <name>`. Requires confirmation.
+Delete a content item from a storage pool by its volume ID. Requires `--node <name>` and confirmation.
 
 ```bash
 ./pm storage content delete local "local:iso/ubuntu-24.04.iso" --node pve
@@ -52,7 +55,7 @@ Requires `--node <name>`. Requires confirmation.
 
 ## `storage backup list`
 
-Lists all backup files across all nodes and storage pools.
+List all backup archive files (`.vma`, `.tar`) across all nodes and storage pools that have `backup` in their content type.
 
 ```bash
 ./pm storage backup list
@@ -61,7 +64,7 @@ Lists all backup files across all nodes and storage pools.
 
 ## `storage backup delete <volid>`
 
-Requires `--node <name>` and `--storage <name>`. Requires confirmation.
+Delete a backup archive. Requires `--node <name>`, `--storage <name>`, and confirmation.
 
 ```bash
 ./pm storage backup delete "local:backup/vzdump-qemu-100-2026_06_01.vma.zst" \

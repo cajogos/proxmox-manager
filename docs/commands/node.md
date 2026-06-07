@@ -2,6 +2,8 @@
 
 ## `node list`
 
+List all Proxmox nodes in the cluster with online status, CPU usage, memory, disk, and uptime.
+
 ```bash
 ./pm node list
 ```
@@ -17,6 +19,8 @@
 
 ## `node status <node>`
 
+Show detailed resource usage for a single node — CPU, memory, disk, network I/O, and kernel version.
+
 ```bash
 ./pm node status pve
 ./pm node status pve --format json
@@ -24,21 +28,25 @@
 
 ## `node version <node>`
 
+Show the Proxmox VE version and package versions installed on the node.
+
 ```bash
 ./pm node version pve
 ```
 
 ## `node shutdown <node>` / `node reboot <node>`
 
-High-risk: fetches running workload count, shows a warning, requires yes/no confirm, then requires typing `"I understand"`.
+Shut down or reboot a node. **High-risk** — before proceeding, the command fetches the count of running VMs and containers on that node and warns you. Requires a yes/no confirmation followed by typing `"I understand"` (case-insensitive).
 
 ```bash
 ./pm node shutdown pve
 ./pm node reboot pve
-./pm node shutdown pve --dry-run
+./pm node shutdown pve --dry-run    # print intent, no API call
 ```
 
 ## `node services list <node>`
+
+List all system services on the node (e.g. `pveproxy`, `pvedaemon`, `corosync`) and their current state.
 
 ```bash
 ./pm node services list pve
@@ -46,11 +54,15 @@ High-risk: fetches running workload count, shows a warning, requires yes/no conf
 
 ## `node services restart <node> <service>`
 
+Restart a specific system service on the node. Useful for applying config changes without a full reboot.
+
 ```bash
 ./pm node services restart pve pveproxy
 ```
 
 ## `node tasks list <node>`
+
+List recent tasks on the node — backups, migrations, VM starts, API calls — with status and timestamps.
 
 ```bash
 ./pm node tasks list pve
@@ -58,6 +70,8 @@ High-risk: fetches running workload count, shows a warning, requires yes/no conf
 ```
 
 ## `node tasks log <node> <upid>`
+
+Stream the full log output of a task identified by its UPID (Unique Process ID). UPIDs appear in task list output and are returned by long-running commands like `vm migrate`.
 
 ```bash
 ./pm node tasks log pve "UPID:pve:00001234:5:..."

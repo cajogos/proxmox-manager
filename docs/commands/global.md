@@ -2,33 +2,39 @@
 
 ## Global Flags
 
-Available on every command:
+These flags are available on every command and can be placed anywhere in the command line.
 
 | Flag | Description |
 |---|---|
-| `--profile <name>` | Use a specific config profile from `config.json` |
-| `--format table\|json\|csv` | Output format (default: `table`) |
-| `--dry-run` | Print what would happen without executing |
-| `--yes` | Skip confirmation prompts (for automation) |
+| `--profile <name>` | Use a named profile from `config.json` instead of the default |
+| `--format table\|json\|csv` | Output format for listing commands (default: `table`) |
+| `--dry-run` | Print what the command would do without making any API calls |
+| `--yes` | Skip interactive confirmation prompts — useful for scripting and automation |
 
 ## Running Commands
 
 ```bash
-# CLI — dev mode (preferred — no pnpm noise)
+# Dev mode — no build required, preferred during development
 ./pm <command> [options]
 
-# CLI — after building
+# After building (pnpm build)
 node dist/index.js <command> [options]
-
-# Web server — dev mode
-pnpm web
-# Web server listens on http://localhost:3000 by default
-# Override port: SERVER_PORT=8080 pnpm web
 ```
+
+## Starting the Web Server
+
+```bash
+pnpm web:dev     # API server (port 3000) + Vite dev server (port 5173) — for development
+pnpm web:server  # API server only
+pnpm web:ui      # Vite dev server only
+pnpm build:web   # Production build → web/dist/
+```
+
+The API server port defaults to `3000`. Override with `SERVER_PORT=8080 pnpm web`.
 
 ## Audit Log
 
-Every command — listing, dry-run, failure, cancellation — is written as a JSON line.
+Every command — including listings, dry-runs, failures, and cancellations — is written as a single JSON line to the audit log path set in `config.json`.
 
 ```bash
 cat ~/.proxmox-manager/audit.log | tail -5
@@ -38,4 +44,4 @@ cat ~/.proxmox-manager/audit.log | tail -5
 {"timestamp":"2026-06-07T13:00:00.000Z","profile":"homelab","command":"vm list","resource":{"type":"vm"},"dryRun":false,"result":"success","error":null,"source":"cli"}
 ```
 
-The `source` field is `"cli"` for terminal commands and `"web"` for requests via the API server.
+The `source` field is `"cli"` for terminal commands and `"web"` for requests made via the API server.

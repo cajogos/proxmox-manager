@@ -2,7 +2,7 @@
 
 ## `network list <node>`
 
-List network interfaces on a node.
+List all network interfaces configured on a node — bridges, bonds, VLANs, and physical NICs — with their type, IP address, and active/autostart state.
 
 ```bash
 ./pm network list pve
@@ -20,7 +20,7 @@ List network interfaces on a node.
 
 ## `network show <node> <iface>`
 
-Show full detail for a single interface.
+Show the full configuration detail for a single network interface, including all options set in `/etc/network/interfaces`.
 
 ```bash
 ./pm network show pve vmbr0
@@ -28,7 +28,7 @@ Show full detail for a single interface.
 
 ## `network create <node>`
 
-Create a new network interface on a node. Use `--type` to specify bridge, bond, or VLAN.
+Create a new network interface on a node. Changes are staged and do not take effect until `network apply` is run.
 
 ```bash
 ./pm network create pve --type bridge --iface vmbr1 --address 10.0.0.1/24
@@ -36,7 +36,7 @@ Create a new network interface on a node. Use `--type` to specify bridge, bond, 
 
 ## `network update <node> <iface>`
 
-Update an existing network interface configuration.
+Update an existing interface configuration. Changes are staged and do not take effect until `network apply` is run.
 
 ```bash
 ./pm network update pve vmbr1 --comments "VM network"
@@ -44,7 +44,7 @@ Update an existing network interface configuration.
 
 ## `network delete <node> <iface>`
 
-Delete a network interface configuration. Requires confirmation.
+Remove a network interface configuration from a node. Changes are staged and do not take effect until `network apply` is run. Requires confirmation.
 
 ```bash
 ./pm network delete pve vmbr1
@@ -52,7 +52,7 @@ Delete a network interface configuration. Requires confirmation.
 
 ## `network apply <node>`
 
-Apply pending network configuration changes on a node.
+Apply all pending (staged) network configuration changes on the node. This activates new or modified interfaces without requiring a reboot.
 
 ```bash
 ./pm network apply pve
