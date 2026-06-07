@@ -46,7 +46,7 @@ There are no tests yet. Type-check is the primary correctness gate.
 | API endpoints | `src/api/endpoints/storage.ts` | Storage API calls — list pools (dedup by node), content, upload, delete; `listAllBackups()` |
 | API endpoints | `src/api/endpoints/cluster.ts` | Cluster API calls — status entries, resources (with optional type filter), HA status |
 | API endpoints | `src/api/endpoints/network.ts` | Network API calls — list interfaces per node, get single interface detail |
-| API endpoints | `src/api/endpoints/access.ts` | Access API calls — users, groups, roles |
+| API endpoints | `src/api/endpoints/access.ts` | Access API calls — users, groups, roles, API tokens |
 | API endpoints | `src/api/endpoints/vzdump.ts` | Backup job API calls — list, get, create, delete scheduled jobs |
 | API endpoints | `src/api/endpoints/firewall.ts` | Firewall rule API calls — cluster-level, per-VM, per-LXC (list, create, delete) |
 | API endpoints | `src/api/endpoints/sdn.ts` | SDN API calls — list zones, VNets, subnets |
@@ -56,7 +56,7 @@ There are no tests yet. Type-check is the primary correctness gate.
 | **Services** | `src/services/storage.ts` | Storage business logic — 6 service functions; `--node` required for node-scoped calls |
 | **Services** | `src/services/cluster.ts` | Cluster business logic — 3 service functions |
 | **Services** | `src/services/network.ts` | Network business logic — 2 service functions |
-| **Services** | `src/services/access.ts` | Access business logic — 4 service functions (users, groups, roles) |
+| **Services** | `src/services/access.ts` | Access business logic — 7 service functions (users, groups, roles, tokens) |
 | **Services** | `src/services/vzdump.ts` | Backup job business logic — 4 service functions |
 | **Services** | `src/services/firewall.ts` | Firewall business logic — cluster, VM, LXC rule CRUD |
 | **Services** | `src/services/sdn.ts` | SDN business logic — list zones, VNets, subnets |
@@ -107,19 +107,9 @@ Follow the pattern in `src/cli/commands/vm/` and `src/services/vm.ts`:
 
 **Proxmox API:** `https://<host>:<port>/api2/json`. All responses wrap data in `{ data: T }`. The client unwraps it automatically. Auth header: `PVEAPIToken=<API_TOKEN_ID>=<API_TOKEN_SECRET>`.
 
-### Development phases
+### Development status
 
-Phases 1–8 are complete. The remaining work is tracked in two files:
-
-- **`docs/plan/final_phase.md`** — Incomplete scope from phases 7–8 (VM live migration, API token CRUD, web routes + UI pages for cluster/network/access/backup). Each section has a Requirements block and a tickable Checklist.
-- **`docs/plan/ideas.md`** — Future ideas and observations, not yet committed to.
-
-After completing any item from `final_phase.md`:
-
-1. Tick all relevant checklist items in `docs/plan/final_phase.md`
-2. Update `README.md` — add any new features to the Features list
-3. Update `docs/COMMANDS.md` — update example output and add new commands
-4. Update `CLAUDE.md` — reflect new layers, helpers, or patterns added
+All phases are complete. The feature set is fully implemented. When adding new commands, update `README.md`, `docs/COMMANDS.md`, and `CLAUDE.md`.
 
 ### CLI output conventions (Phase 2+)
 

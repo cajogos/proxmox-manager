@@ -39,3 +39,40 @@ export async function listGroups(client: ProxmoxClient): Promise<GroupInfo[]> {
 export async function listRoles(client: ProxmoxClient): Promise<RoleInfo[]> {
   return client.get<RoleInfo[]>('/access/roles');
 }
+
+export interface APIToken {
+  tokenid: string;
+  comment?: string;
+  expire?: number;
+  privsep?: number;
+}
+
+export interface CreatedTokenSecret {
+  'full-tokenid': string;
+  info: APIToken;
+  value: string;
+}
+
+export async function listUserTokens(client: ProxmoxClient, userid: string): Promise<APIToken[]> {
+  return client.get<APIToken[]>(`/access/users/${encodeURIComponent(userid)}/token`);
+}
+
+export async function createUserToken(
+  client: ProxmoxClient,
+  userid: string,
+  tokenid: string,
+  params: { comment?: string; expire?: number; privsep?: number },
+): Promise<CreatedTokenSecret> {
+  return client.post<CreatedTokenSecret>(
+    `/access/users/${encodeURIComponent(userid)}/token/${encodeURIComponent(tokenid)}`,
+    params,
+  );
+}
+
+export async function deleteUserToken(
+  client: ProxmoxClient,
+  userid: string,
+  tokenid: string,
+): Promise<void> {
+  await client.delete(`/access/users/${encodeURIComponent(userid)}/token/${encodeURIComponent(tokenid)}`);
+}

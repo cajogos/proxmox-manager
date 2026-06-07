@@ -145,6 +145,17 @@ High-risk: shows a warning and requires confirmation. Current VM state is perman
 ./pm vm snapshot rollback 100 before-update
 ```
 
+### `vm migrate <vmid> <target-node>`
+
+Migrate a VM to another node. Checks preconditions before migrating and returns a task UPID.
+
+```bash
+./pm vm migrate 100 pve2
+./pm vm migrate 100 pve2 --online            # live migration (no downtime)
+./pm vm migrate 100 pve2 --with-local-disks  # migrate VMs with local disks (confirms)
+./pm vm migrate 100 pve2 --dry-run
+```
+
 ---
 
 ## Phase 4 — LXC Container Management
@@ -495,6 +506,34 @@ List all roles.
 
 ```bash
 ./pm access role list
+```
+
+### `access token list <userid>`
+
+List API tokens for a user.
+
+```bash
+./pm access token list root@pam
+```
+
+### `access token create <userid> <tokenid>`
+
+Create an API token. The secret value is printed **once** and cannot be retrieved again.
+
+```bash
+./pm access token create root@pam my-token
+./pm access token create root@pam ci-token --comment "CI pipeline" --privsep 1
+./pm access token create root@pam temp-token --expire 1767225600
+```
+
+### `access token delete <userid> <tokenid>`
+
+Delete an API token. Requires confirmation.
+
+```bash
+./pm access token delete root@pam my-token
+./pm access token delete root@pam my-token --yes
+./pm access token delete root@pam my-token --dry-run
 ```
 
 ---

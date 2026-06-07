@@ -16,13 +16,13 @@ A safe, audited CLI for managing Proxmox VE from your terminal. Built with TypeS
 - **Protected resources** — config-driven list of VMs/nodes/containers that cannot be touched
 - **Flexible output** — `--format table|json|csv` on every listing command
 - **Polished CLI** — spinner during API calls, colored status, human-readable memory (GB), compact tables, summary line
-- **Full VM lifecycle** — start, stop, shutdown, reboot, suspend, resume, snapshots, config, delete (with double-confirm)
+- **Full VM lifecycle** — start, stop, shutdown, reboot, suspend, resume, snapshots, config, delete (with double-confirm), live migration
 - **Full LXC lifecycle** — same command set as VMs, plus `lxc exec` for running commands inside containers
 - **Node management** — list, status, version, services, tasks, shutdown/reboot with double-confirmation and affected-workload warning
 - **Storage management** — list pools, inspect status, list/upload/delete content (ISO, templates), list/delete backups
 - **Cluster + HA** — cluster node status, resource inventory, HA resource states
 - **Network config** — list and inspect network interfaces per node (bridges, bonds, VLANs)
-- **Access management** — list users, groups, and roles; inspect user detail
+- **Access management** — list users, groups, and roles; inspect user detail; list, create, and delete API tokens
 - **Backup jobs** — list, show, create, and delete vzdump scheduled backup jobs
 - **Web UI** — React + Vite frontend at `http://localhost:5173`; lists VMs, LXC, Nodes, Storage with action buttons; backed by a local Express API server
 
@@ -112,21 +112,6 @@ node dist/index.js <command> [options]
 ```
 
 See [docs/COMMANDS.md](docs/COMMANDS.md) for the full command reference.
-
----
-
-## Development Phases
-
-| Phase | Status | Description |
-|---|---|---|
-| [Phase 1](docs/plan/phase_1.md) | ✅ Complete | Core infrastructure + VM listing |
-| [Phase 2](docs/plan/phase_2.md) | ✅ Complete | CLI aesthetics (colors, spinners, compact tables, human-readable values) |
-| [Phase 3](docs/plan/phase_3.md) | ✅ Complete | Full VM lifecycle management |
-| [Phase 4](docs/plan/phase_4.md) | ✅ Complete | LXC container management |
-| [Phase 5](docs/plan/phase_5.md) | ✅ Complete | Node management |
-| [Phase 6](docs/plan/phase_6.md) | ✅ Complete | Storage management |
-| [Phase 7](docs/plan/phase_7.md) | ✅ Complete | Cluster, network, access, and backup job management |
-| [Phase 8](docs/plan/phase_8.md) | ✅ Complete | Web UI scaffold — React + Vite + routed API server |
 
 ---
 

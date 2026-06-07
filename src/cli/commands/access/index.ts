@@ -1,12 +1,14 @@
 import { Command } from 'commander';
 import { registerAccessUserCommands } from './user/index';
+import { registerAccessTokenCommands } from './token/index';
 import { accessGroupList } from './group/list';
 import { accessRoleList } from './role/list';
 
 export function registerAccessCommands(program: Command): void {
-  const access = program.command('access').description('Manage Proxmox users, groups, and roles');
+  const access = program.command('access').description('Manage Proxmox users, groups, roles, and API tokens');
 
   registerAccessUserCommands(access);
+  registerAccessTokenCommands(access);
 
   const group = access.command('group').description('Manage Proxmox groups');
   group
