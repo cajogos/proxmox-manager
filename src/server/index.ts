@@ -1,7 +1,12 @@
 import express from 'express';
-import { loadConfig, resolveProfile } from '../config/loader';
-import { configureAuditLog, audit } from '../audit/logger';
-import { getVMs } from '../services/vm';
+import { loadConfig } from '../config/loader';
+import { configureAuditLog } from '../audit/logger';
+import { profileMiddleware } from './middleware/profile';
+import { errorHandler } from './middleware/error';
+import { vmsRouter } from './routes/vms';
+import { lxcRouter } from './routes/lxc';
+import { nodesRouter } from './routes/nodes';
+import { storageRouter } from './routes/storage';
 import { version } from '../../package.json';
 
 const PORT = parseInt(process.env.SERVER_PORT ?? '3000', 10);
@@ -19,39 +24,18 @@ try {
 }
 configureAuditLog(config.auditLog.path);
 
+app.use(profileMiddleware(config));
+
 app.get('/health', (_req, res) => {
   res.json({ ok: true, version });
 });
 
-app.get('/api/vms', async (req, res) => {
-  const profileName = req.query.profile as string | undefined;
-  const result = await getVMs(config, profileName);
+app.use('/api/vms', vmsRouter(config));
+app.use('/api/lxc', lxcRouter(config));
+app.use('/api/nodes', nodesRouter(config));
+app.use('/api/storage', storageRouter(config));
 
-  let resolvedProfile: string;
-  try {
-    resolvedProfile = resolveProfile(config, profileName).name;
-  } catch {
-    resolvedProfile = profileName ?? config.defaultProfile ?? 'default';
-  }
-
-  audit({
-    timestamp: new Date().toISOString(),
-    profile: resolvedProfile,
-    command: 'vm list',
-    resource: { type: 'vm' },
-    dryRun: false,
-    result: result.ok ? 'success' : 'failed',
-    error: result.ok ? null : result.error,
-    source: 'web',
-  });
-
-  if (!result.ok) {
-    res.status(500).json({ ok: false, error: result.error });
-    return;
-  }
-
-  res.json({ ok: true, data: result.data });
-});
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`proxmox-manager web server running on http://localhost:${PORT}`);

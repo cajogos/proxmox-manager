@@ -541,3 +541,51 @@ Delete a backup job. Prompts for confirmation.
 ./pm backup delete backup-nightly
 ./pm backup delete backup-nightly --yes
 ```
+
+---
+
+## Phase 8 — Web UI & Expanded API Server
+
+### Starting the Web UI
+
+```bash
+pnpm web:dev    # Starts both API server (port 3000) + Vite dev server (port 5173)
+pnpm web:server # API server only
+pnpm web:ui     # Vite only
+pnpm build:web  # Production build → web/dist/
+```
+
+Open `http://localhost:5173` in a browser — the sidebar links to VMs, LXC, Nodes, Storage.
+
+### New API Endpoints (Phase 8)
+
+All endpoints accept `?profile=<name>` or `X-Profile: <name>` header.
+
+```bash
+# LXC
+GET  /api/lxc
+GET  /api/lxc/:ctid
+POST /api/lxc/:ctid/start
+POST /api/lxc/:ctid/shutdown
+
+# Nodes
+GET  /api/nodes
+GET  /api/nodes/:node
+GET  /api/nodes/:node/services
+GET  /api/nodes/:node/tasks
+GET  /api/nodes/:node/tasks/:upid/log
+
+# Storage
+GET  /api/storage
+GET  /api/storage/:storage/content?node=<node>
+
+# VM actions (all existing)
+POST /api/vms/:vmid/start
+POST /api/vms/:vmid/stop
+POST /api/vms/:vmid/shutdown
+POST /api/vms/:vmid/reboot
+POST /api/vms/:vmid/suspend
+POST /api/vms/:vmid/resume
+```
+
+All responses: `{ ok: true, data: [...] }` on success, `{ ok: false, error: "..." }` on failure.

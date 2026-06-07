@@ -24,6 +24,16 @@ A safe, audited CLI for managing Proxmox VE from your terminal. Built with TypeS
 - **Network config** — list and inspect network interfaces per node (bridges, bonds, VLANs)
 - **Access management** — list users, groups, and roles; inspect user detail
 - **Backup jobs** — list, show, create, and delete vzdump scheduled backup jobs
+- **Web UI** — React + Vite frontend at `http://localhost:5173`; lists VMs, LXC, Nodes, Storage with action buttons; backed by a local Express API server
+
+## Web UI
+
+```bash
+pnpm web:dev    # Start API server + Vite together (open http://localhost:5173)
+pnpm web:server # API server only (http://localhost:3000)
+pnpm web:ui     # Vite dev server only
+pnpm build:web  # Production build of the React app
+```
 
 ---
 
@@ -116,7 +126,7 @@ See [docs/COMMANDS.md](docs/COMMANDS.md) for the full command reference.
 | [Phase 5](docs/plan/phase_5.md) | ✅ Complete | Node management |
 | [Phase 6](docs/plan/phase_6.md) | ✅ Complete | Storage management |
 | [Phase 7](docs/plan/phase_7.md) | ✅ Complete | Cluster, network, access, and backup job management |
-| [Phase 8](docs/plan/phase_8.md) | 🔲 Pending | Web UI (React + Vite + API server) |
+| [Phase 8](docs/plan/phase_8.md) | ✅ Complete | Web UI scaffold — React + Vite + routed API server |
 
 ---
 

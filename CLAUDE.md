@@ -8,7 +8,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 pnpm build          # compile TypeScript → dist/
 pnpm typecheck      # type-check without emitting (run before every commit)
 pnpm cli            # run CLI via tsx (dev mode, no build needed)
-pnpm web            # run web server via tsx (dev mode)
+pnpm web            # run API server via tsx (dev mode)
+pnpm web:dev        # run API server + Vite dev server concurrently
+pnpm web:server     # API server only (alias for pnpm web)
+pnpm web:ui         # Vite dev server only (cd web && pnpm dev)
+pnpm build:web      # production build of the React app → web/dist/
 ```
 
 Run the CLI directly:
@@ -57,7 +61,12 @@ There are no tests yet. Type-check is the primary correctness gate.
 | Output helpers | `src/output/humanize.ts` | `humanMB()`, `humanSeconds()`, `humanBytes()` |
 | Output helpers | `src/output/spinner.ts` | `startSpinner(text)` — thin ora v5 wrapper; returns `stop()` and `setText(t)` for live progress updates |
 | CLI commands | `src/cli/commands/` | Thin wrappers: call a service, format the result, write the audit entry |
-| Web server | `src/server/` | Express server exposing services as REST endpoints |
+| Web server | `src/server/index.ts` | Bootstrap: loads config, mounts middleware and routers, listens on `SERVER_PORT` (default 3000) |
+| Web middleware | `src/server/middleware/profile.ts` | Resolves profile from `?profile=` query or `X-Profile` header; attaches to `req.profileName` |
+| Web middleware | `src/server/middleware/error.ts` | Express 5 catch-all error handler: `(err, req, res, next)` → `{ ok: false, error }` |
+| Web routes | `src/server/routes/` | Route files: `vms.ts`, `lxc.ts`, `nodes.ts`, `storage.ts` — each exports a factory `xxxRouter(config)` |
+| Web UI | `web/` | React + Vite frontend; own `package.json` + `tsconfig.json`; workspace member via `pnpm-workspace.yaml` |
+| Web API client | `web/src/api/client.ts` | Typed `fetch` wrappers: `getVMs`, `getLXC`, `getNodes`, `getStorage`, `vmAction`, `lxcAction` |
 
 ### Safeguard pipeline (destructive commands only)
 
