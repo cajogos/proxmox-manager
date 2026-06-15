@@ -111,6 +111,25 @@ Follow the pattern in `src/cli/commands/vm/` and `src/services/vm.ts`:
 
 All phases are complete. The feature set is fully implemented. When adding new commands, update `README.md`, `docs/COMMANDS.md`, and `CLAUDE.md`.
 
+### Public repository safety (audited 2026-06-15)
+
+The git tree is **safe to publish publicly**. Audit findings:
+
+| Check | Result |
+|---|---|
+| Hardcoded credentials in tracked files | ✅ None |
+| `config.json` tracked by git | ✅ Not tracked (`.gitignored`) |
+| `config.json` ever in git history | ✅ Never committed |
+| `.env` / `.pem` / `.key` / `.crt` files tracked | ✅ None |
+| Personal or company identifiers in source | ✅ None |
+| Real internal IPs or hostnames | ✅ None (only generic RFC1918 examples in `config.example.json`) |
+| Audit log files tracked | ✅ `logs/` is `.gitignored` |
+
+**Ongoing rules to maintain this:**
+- `config.json` must never be committed — it holds real Proxmox API tokens. `.gitignore` already excludes it.
+- `logs/` must never be committed — audit entries may contain resource IDs and operation history.
+- `config.example.json` must only ever contain placeholder tokens (`xxxxxxxx-xxxx-…`) and generic example IPs.
+
 ### CLI output conventions
 
 Every command must follow this pattern:

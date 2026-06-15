@@ -106,8 +106,8 @@ export default function Documentation() {
   if (error) return <p className="text-destructive">Error: {error}</p>;
 
   return (
-    <div className="flex gap-6">
-      <nav className="w-52 shrink-0 space-y-4">
+    <div className="flex h-[calc(100vh-4rem)] gap-6">
+      <nav className="w-52 shrink-0 overflow-y-auto space-y-4">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Docs</span>
           <Button
@@ -153,7 +153,7 @@ export default function Documentation() {
         ))}
       </nav>
 
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 overflow-y-auto">
         {contentLoading ? (
           <p className="text-muted-foreground">Loading…</p>
         ) : (
