@@ -37,7 +37,9 @@ export function accessRouter(config: Config): Router {
 
   router.put('/users/:userid', async (req: Request, res: Response) => {
     const userid = req.params['userid'] as string;
-    const result = await updateUserService(config, userid, req.body as Partial<Omit<CreateUserParams, 'userid'>>, { profile: req.profileName });
+    const body = { ...(req.body as Partial<Omit<CreateUserParams, 'userid'>>) };
+    delete (body as Record<string, unknown>)['userid'];
+    const result = await updateUserService(config, userid, body, { profile: req.profileName });
     audit({ timestamp: new Date().toISOString(), profile: req.profileName, command: 'access user update', resource: { type: 'user', id: userid }, dryRun: false, result: result.ok ? 'success' : 'failed', error: result.ok ? null : result.error, source: 'web' });
     if (!result.ok) { res.status(500).json({ ok: false, error: result.error }); return; }
     res.json({ ok: true, data: null });

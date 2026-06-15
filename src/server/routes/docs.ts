@@ -29,8 +29,11 @@ const SETUP_FILES: { name: string; file: string }[] = [
   { name: 'Troubleshooting', file: 'troubleshooting.md' },
 ];
 
+function isValidDocFile(file: string): boolean {
+  return file.endsWith('.md') && !file.includes('/') && !file.includes('..');
+}
+
 function readDocFile(dir: string, file: string): string | null {
-  if (!file.endsWith('.md') || file.includes('/') || file.includes('..')) return null;
   const filePath = path.join(dir, file);
   if (!fs.existsSync(filePath)) return null;
   return fs.readFileSync(filePath, 'utf-8');
@@ -65,6 +68,7 @@ export function docsRouter(): Router {
   // Section + file
   router.get('/setup/:file', (req, res) => {
     const file = req.params['file'] as string;
+    if (!isValidDocFile(file)) { res.status(400).json({ ok: false, error: 'Invalid file name' }); return; }
     const content = readDocFile(SETUP_DIR, file);
     if (!content) { res.status(404).json({ ok: false, error: 'File not found' }); return; }
     res.json({ ok: true, data: content });
@@ -72,6 +76,7 @@ export function docsRouter(): Router {
 
   router.get('/commands/:file', (req, res) => {
     const file = req.params['file'] as string;
+    if (!isValidDocFile(file)) { res.status(400).json({ ok: false, error: 'Invalid file name' }); return; }
     const content = readDocFile(COMMANDS_DIR, file);
     if (!content) { res.status(404).json({ ok: false, error: 'File not found' }); return; }
     res.json({ ok: true, data: content });
@@ -80,6 +85,7 @@ export function docsRouter(): Router {
   // Backward-compat: commands only
   router.get('/:file', (req, res) => {
     const file = req.params['file'] as string;
+    if (!isValidDocFile(file)) { res.status(400).json({ ok: false, error: 'Invalid file name' }); return; }
     const content = readDocFile(COMMANDS_DIR, file);
     if (!content) { res.status(404).json({ ok: false, error: 'File not found' }); return; }
     res.json({ ok: true, data: content });

@@ -42,8 +42,10 @@ export default function Access() {
 
   async function handleDelete() {
     if (!confirmDelete) return;
-    if (confirmDelete.type === 'user') await deleteAccessUser(confirmDelete.id);
-    else await deleteAccessGroup(confirmDelete.id);
+    const result = confirmDelete.type === 'user'
+      ? await deleteAccessUser(confirmDelete.id)
+      : await deleteAccessGroup(confirmDelete.id);
+    if (!result.ok) { setError(result.error); return; }
     setConfirmDelete(null);
     void fetchAll();
   }

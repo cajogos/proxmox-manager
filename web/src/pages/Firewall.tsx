@@ -154,7 +154,11 @@ export default function Firewall() {
     setRules(result.data);
   }
 
-  useEffect(() => { void loadRules(); }, [tab, selectedVM, selectedLXC]);
+  // Compute tab-scoped keys so selectedVM/selectedLXC changes don't re-fetch when irrelevant to the active tab
+  const vmTabKey = tab === 'VM Rules' ? selectedVM : null;
+  const lxcTabKey = tab === 'LXC Rules' ? selectedLXC : null;
+
+  useEffect(() => { void loadRules(); }, [tab, vmTabKey, lxcTabKey]);
 
   useEffect(() => {
     void getVMs().then(r => { if (r.ok) { setVMs(r.data); if (r.data.length > 0 && !selectedVM) setSelectedVM(r.data[0].vmid); } });
