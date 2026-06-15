@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 import { OutputFormat } from '../../../output/formatter';
 import { listVMs } from './list';
+import { vmCreate } from './create';
 import { vmStatus } from './status';
 import { vmConfig } from './config';
 import { vmStart } from './start';
@@ -20,6 +21,40 @@ export function registerVMCommands(program: Command): void {
     .command('vm')
     .description('Manage QEMU virtual machines')
     .action(function () { vm.outputHelp(); });
+
+  vm.command('create')
+    .description('Create a new QEMU VM')
+    .requiredOption('--name <name>', 'VM display name')
+    .requiredOption('--node <node>', 'Target node')
+    .option('--vmid <id>', 'Explicit VMID (auto-assigned if omitted)')
+    .option('--memory <mb>', 'RAM in MB (default: 512)')
+    .option('--cores <n>', 'CPU cores (default: 1)')
+    .option('--sockets <n>', 'CPU sockets (default: 1)')
+    .option('--cpu <type>', 'CPU model, e.g. kvm64, host (default: kvm64)')
+    .option('--ostype <type>', 'OS type, e.g. l26, win11 (default: l26)')
+    .option('--disk <storage:size>', 'Primary disk, e.g. local-lvm:32')
+    .option('--iso <storage:path>', 'ISO image for CDROM, e.g. local:iso/debian-12.iso')
+    .option('--net <model,bridge>', 'Network adapter, e.g. virtio,bridge=vmbr0')
+    .option('--start', 'Start VM immediately after creation')
+    .action(async (_opts, cmd: Command) => {
+      const globals = cmd.optsWithGlobals<{ profile?: string; dryRun?: boolean; }>();
+      const cmdOpts = cmd.opts<{ name: string; node: string; vmid?: string; memory?: string; cores?: string; sockets?: string; cpu?: string; ostype?: string; disk?: string; iso?: string; net?: string; start?: boolean; }>();
+      await vmCreate(cmdOpts.name, {
+        profile: globals.profile,
+        node: cmdOpts.node,
+        vmid: cmdOpts.vmid ? Number(cmdOpts.vmid) : undefined,
+        memory: cmdOpts.memory ? Number(cmdOpts.memory) : undefined,
+        cores: cmdOpts.cores ? Number(cmdOpts.cores) : undefined,
+        sockets: cmdOpts.sockets ? Number(cmdOpts.sockets) : undefined,
+        cpu: cmdOpts.cpu,
+        ostype: cmdOpts.ostype,
+        disk: cmdOpts.disk,
+        iso: cmdOpts.iso,
+        net: cmdOpts.net,
+        start: !!cmdOpts.start,
+        dryRun: !!globals.dryRun,
+      });
+    });
 
   vm.command('list')
     .description('List all VMs across all nodes')

@@ -5,6 +5,7 @@ import {
   listClusterStatus,
   listClusterResources,
   listHAStatus,
+  getNextVMID,
   ClusterStatusEntry,
   ClusterResource,
   HAStatusEntry,
@@ -55,6 +56,20 @@ export async function listHAStatusService(
     const { profile } = resolveProfile(config, opts.profile);
     const client = new ProxmoxClient(profile);
     const data = await listHAStatus(client);
+    return { ok: true, data };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+export async function getNextVMIDService(
+  config: Config,
+  opts: ClusterOpts,
+): Promise<CommandResult<number>> {
+  try {
+    const { profile } = resolveProfile(config, opts.profile);
+    const client = new ProxmoxClient(profile);
+    const data = await getNextVMID(client);
     return { ok: true, data };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : String(e) };

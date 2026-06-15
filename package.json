@@ -27,11 +27,13 @@
   "author": "Carlos Ferreira",
   "license": "MIT",
   "dependencies": {
+    "@types/multer": "^2.1.0",
     "axios": "^1.17.0",
     "chalk": "^4.1.2",
     "cli-table3": "^0.6.5",
     "commander": "^15.0.0",
     "express": "^5.2.1",
+    "multer": "^2.1.1",
     "ora": "^5.4.1",
     "prompts": "^2.4.2",
     "ws": "^8.21.0",

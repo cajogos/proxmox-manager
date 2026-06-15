@@ -55,3 +55,7 @@ export async function listClusterResources(
 export async function listHAStatus(client: ProxmoxClient): Promise<HAStatusEntry[]> {
   return client.get<HAStatusEntry[]>('/cluster/ha/status/current');
 }
+
+export async function getNextVMID(client: ProxmoxClient): Promise<number> {
+  return client.get<number>('/cluster/nextid');
+}

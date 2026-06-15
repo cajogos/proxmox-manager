@@ -142,6 +142,39 @@ export function execLXC(host: string, vmid: number, command: string[]): ExecResu
   };
 }
 
+export interface CreateLXCParams {
+  vmid: number;
+  hostname: string;
+  ostemplate: string;
+  rootfs: string;
+  memory?: number;
+  cores?: number;
+  password?: string;
+  net?: string;
+  unprivileged?: boolean;
+  start?: boolean;
+}
+
+export async function createLXC(
+  client: ProxmoxClient,
+  node: string,
+  params: CreateLXCParams,
+): Promise<string> {
+  const body: Record<string, unknown> = {
+    vmid: params.vmid,
+    hostname: params.hostname,
+    ostemplate: params.ostemplate,
+    rootfs: params.rootfs,
+  };
+  if (params.memory)      body['memory']      = params.memory;
+  if (params.cores)       body['cores']       = params.cores;
+  if (params.password)    body['password']    = params.password;
+  if (params.net)         body['net0']        = params.net;
+  if (params.unprivileged !== undefined) body['unprivileged'] = params.unprivileged ? 1 : 0;
+  if (params.start)       body['start']       = 1;
+  return client.post<string>(`/nodes/${node}/lxc`, body);
+}
+
 export interface CloneLXCParams {
   newid: number;
   hostname?: string;

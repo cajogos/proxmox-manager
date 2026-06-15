@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { getLXC, getLXCIPs, lxcAction, type LXCInfo } from '@/api/client';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import CreateLXCDialog from '@/components/CreateLXCDialog';
+import Terminal from '@/components/Terminal';
 
 function statusBadge(status: string) {
   if (status === 'running') return <Badge variant="success">running</Badge>;
@@ -21,6 +24,8 @@ export default function LXC() {
   const [ips, setIPs] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showCreate, setShowCreate] = useState(false);
+  const [terminalCtid, setTerminalCtid] = useState<number | null>(null);
 
   async function load() {
     setLoading(true);
@@ -52,10 +57,24 @@ export default function LXC() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h2 className="text-xl font-semibold">LXC Containers</h2>
-        <p className="text-sm text-muted-foreground">{containers.length} container(s)</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-semibold">LXC Containers</h2>
+          <p className="text-sm text-muted-foreground">{containers.length} container(s)</p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => void load()}>Refresh</Button>
+          <Button size="sm" onClick={() => setShowCreate(true)}>Create LXC</Button>
+        </div>
       </div>
+      <CreateLXCDialog
+        open={showCreate}
+        onClose={() => setShowCreate(false)}
+        onSuccess={() => { setShowCreate(false); void load(); }}
+      />
+      {terminalCtid !== null && (
+        <Terminal ctid={terminalCtid} onClose={() => setTerminalCtid(null)} />
+      )}
       <Table>
         <TableHeader>
           <TableRow>
@@ -73,7 +92,7 @@ export default function LXC() {
         <TableBody>
           {[...containers].sort((a, b) => a.vmid - b.vmid).map(ct => (
             <TableRow key={ct.vmid}>
-              <TableCell className="font-mono">{ct.vmid}</TableCell>
+              <TableCell className="font-mono"><Link to={`/lxc/${ct.vmid}`} className="hover:underline text-primary">{ct.vmid}</Link></TableCell>
               <TableCell>{ct.name ?? '-'}</TableCell>
               <TableCell>{statusBadge(ct.status)}</TableCell>
               <TableCell>{ct.node}</TableCell>
@@ -90,6 +109,9 @@ export default function LXC() {
                   )}
                   {ct.status === 'running' && (
                     <>
+                      <Button size="sm" variant="outline" onClick={() => setTerminalCtid(ct.vmid)}>
+                        Terminal
+                      </Button>
                       <Button size="sm" variant="outline" onClick={() => handleAction(ct.vmid, 'shutdown')}>
                         Shutdown
                       </Button>

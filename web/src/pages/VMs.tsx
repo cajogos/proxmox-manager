@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { getVMs, getVMIPs, vmAction, type VMInfo } from '@/api/client';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import CreateVMDialog from '@/components/CreateVMDialog';
 
 function statusBadge(status: string) {
   if (status === 'running') return <Badge variant="success">running</Badge>;
@@ -21,6 +23,7 @@ export default function VMs() {
   const [ips, setIPs] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showCreate, setShowCreate] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -52,10 +55,21 @@ export default function VMs() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h2 className="text-xl font-semibold">Virtual Machines</h2>
-        <p className="text-sm text-muted-foreground">{vms.length} VM(s)</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-semibold">Virtual Machines</h2>
+          <p className="text-sm text-muted-foreground">{vms.length} VM(s)</p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => void load()}>Refresh</Button>
+          <Button size="sm" onClick={() => setShowCreate(true)}>Create VM</Button>
+        </div>
       </div>
+      <CreateVMDialog
+        open={showCreate}
+        onClose={() => setShowCreate(false)}
+        onSuccess={() => { setShowCreate(false); void load(); }}
+      />
       <Table>
         <TableHeader>
           <TableRow>
@@ -73,7 +87,7 @@ export default function VMs() {
         <TableBody>
           {[...vms].sort((a, b) => a.vmid - b.vmid).map(vm => (
             <TableRow key={vm.vmid}>
-              <TableCell className="font-mono">{vm.vmid}</TableCell>
+              <TableCell className="font-mono"><Link to={`/vms/${vm.vmid}`} className="hover:underline text-primary">{vm.vmid}</Link></TableCell>
               <TableCell>{vm.name ?? '-'}</TableCell>
               <TableCell>{statusBadge(vm.status)}</TableCell>
               <TableCell>{vm.node}</TableCell>

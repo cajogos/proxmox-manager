@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 import { OutputFormat } from '../../../output/formatter';
 import { listLXC } from './list';
+import { lxcCreate } from './create';
 import { lxcStatus } from './status';
 import { lxcConfig } from './config';
 import { lxcStart } from './start';
@@ -20,6 +21,38 @@ export function registerLXCCommands(program: Command): void {
     .command('lxc')
     .description('Manage LXC containers')
     .action(function () { lxc.outputHelp(); });
+
+  lxc.command('create')
+    .description('Create a new LXC container')
+    .requiredOption('--name <hostname>', 'Container hostname')
+    .requiredOption('--node <node>', 'Target node')
+    .requiredOption('--template <storage:path>', 'CT template, e.g. local:vztmpl/debian-12-standard.tar.zst')
+    .requiredOption('--rootfs <storage:size>', 'Root filesystem, e.g. local-lvm:8')
+    .option('--vmid <id>', 'Explicit VMID (auto-assigned if omitted)')
+    .option('--memory <mb>', 'RAM in MB (default: 512)')
+    .option('--cores <n>', 'CPU cores (default: 1)')
+    .option('--password <pwd>', 'Root password')
+    .option('--net <net-string>', 'Network config, e.g. name=eth0,bridge=vmbr0,ip=dhcp')
+    .option('--privileged', 'Create as privileged container (default: unprivileged)')
+    .option('--start', 'Start container after creation')
+    .action(async (_opts, cmd: Command) => {
+      const globals = cmd.optsWithGlobals<{ profile?: string; dryRun?: boolean; }>();
+      const cmdOpts = cmd.opts<{ name: string; node: string; template: string; rootfs: string; vmid?: string; memory?: string; cores?: string; password?: string; net?: string; privileged?: boolean; start?: boolean; }>();
+      await lxcCreate(cmdOpts.name, {
+        profile: globals.profile,
+        node: cmdOpts.node,
+        template: cmdOpts.template,
+        rootfs: cmdOpts.rootfs,
+        vmid: cmdOpts.vmid ? Number(cmdOpts.vmid) : undefined,
+        memory: cmdOpts.memory ? Number(cmdOpts.memory) : undefined,
+        cores: cmdOpts.cores ? Number(cmdOpts.cores) : undefined,
+        password: cmdOpts.password,
+        net: cmdOpts.net,
+        unprivileged: !cmdOpts.privileged,
+        start: !!cmdOpts.start,
+        dryRun: !!globals.dryRun,
+      });
+    });
 
   lxc.command('list')
     .description('List all containers across all nodes')

@@ -17,10 +17,12 @@ import {
   deleteLXCSnapshot,
   rollbackLXCSnapshot,
   execLXC,
+  createLXC,
   cloneLXC,
   resizeLXCDisk,
   createLXCTermProxy,
   getLXCIPs,
+  CreateLXCParams,
   CloneLXCParams,
   TermProxyResult,
   NodeLXCInfo,
@@ -29,6 +31,7 @@ import {
   LXCSnapshotInfo,
   ExecResult,
 } from '../api/endpoints/lxc';
+import { getNextVMID } from '../api/endpoints/cluster';
 import { CommandResult } from './types';
 
 export interface LXCActionOpts {
@@ -277,6 +280,27 @@ export async function getLXCIPsService(
     const node = await resolveLXCNode(client, ctid, opts.node);
     const ips = await getLXCIPs(client, node, ctid);
     return { ok: true, data: ips };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+export interface CreateLXCOpts {
+  profile?: string;
+  node: string;
+}
+
+export async function createLXCService(
+  config: Config,
+  params: Omit<CreateLXCParams, 'vmid'> & { vmid?: number },
+  opts: CreateLXCOpts,
+): Promise<CommandResult<{ vmid: number; node: string; upid: string }>> {
+  try {
+    const { profile } = resolveProfile(config, opts.profile);
+    const client = new ProxmoxClient(profile);
+    const vmid = params.vmid ?? await getNextVMID(client);
+    const upid = await createLXC(client, opts.node, { ...params, vmid });
+    return { ok: true, data: { vmid, node: opts.node, upid } };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : String(e) };
   }

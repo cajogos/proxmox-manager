@@ -21,13 +21,16 @@ import {
   migrateVM,
   getVMMigrationPreconditions,
   getVMIPs,
+  createVM,
   CloneVMParams,
   MigrateVMParams,
+  CreateVMParams,
   NodeVMInfo,
   VMStatusDetail,
   VMConfig,
   SnapshotInfo,
 } from '../api/endpoints/vm';
+import { getNextVMID } from '../api/endpoints/cluster';
 import { CommandResult } from './types';
 
 export interface VMActionOpts {
@@ -258,6 +261,27 @@ export async function getVMIPsService(
     const node = await resolveVMNode(client, vmid, opts.node);
     const ips = await getVMIPs(client, node, vmid);
     return { ok: true, data: ips };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+export interface CreateVMOpts {
+  profile?: string;
+  node: string;
+}
+
+export async function createVMService(
+  config: Config,
+  params: Omit<CreateVMParams, 'vmid'> & { vmid?: number },
+  opts: CreateVMOpts,
+): Promise<CommandResult<{ vmid: number; node: string; upid: string }>> {
+  try {
+    const { profile } = resolveProfile(config, opts.profile);
+    const client = new ProxmoxClient(profile);
+    const vmid = params.vmid ?? await getNextVMID(client);
+    const upid = await createVM(client, opts.node, { ...params, vmid });
+    return { ok: true, data: { vmid, node: opts.node, upid } };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : String(e) };
   }

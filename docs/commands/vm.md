@@ -3,6 +3,33 @@
 All commands auto-discover the VM's node from the Proxmox API. Pass `--node <name>` to skip discovery.
 Destructive commands require confirmation unless `--yes` is passed.
 
+## `vm create`
+
+Create a new QEMU VM. `--name` and `--node` are required. VMID is auto-assigned from the cluster if omitted.
+
+```bash
+./pm vm create --name my-vm --node pve
+./pm vm create --name my-vm --node pve --memory 2048 --cores 4 --disk local-lvm:32
+./pm vm create --name my-vm --node pve --iso local:iso/debian-12.iso --net virtio,bridge=vmbr0
+./pm vm create --name my-vm --node pve --vmid 200 --start    # explicit VMID + start immediately
+./pm vm create --name my-vm --node pve --memory 1024 --dry-run
+```
+
+| Option | Default | Description |
+|---|---|---|
+| `--name <name>` | _(required)_ | VM display name |
+| `--node <node>` | _(required)_ | Target Proxmox node |
+| `--vmid <id>` | auto | Explicit VMID; auto-assigned from `GET /cluster/nextid` if omitted |
+| `--memory <mb>` | 512 | RAM in MB |
+| `--cores <n>` | 1 | CPU cores |
+| `--sockets <n>` | 1 | CPU sockets |
+| `--cpu <type>` | kvm64 | CPU model (e.g. `kvm64`, `host`) |
+| `--ostype <type>` | l26 | OS type (e.g. `l26`, `win11`) |
+| `--disk <storage:size>` | _(none)_ | Primary disk, e.g. `local-lvm:32` |
+| `--iso <storage:path>` | _(none)_ | ISO image for CDROM, e.g. `local:iso/debian-12.iso` |
+| `--net <model,bridge>` | _(none)_ | Network adapter, e.g. `virtio,bridge=vmbr0` |
+| `--start` | false | Start the VM immediately after creation |
+
 ## `vm list`
 
 List all VMs across all nodes. Shows a compact table with colour-coded status, human-readable memory, and a summary line.

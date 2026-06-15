@@ -24,6 +24,42 @@ export interface RoleInfo {
   special?: number;
 }
 
+export interface CreateUserParams {
+  userid: string;
+  password?: string;
+  firstname?: string;
+  lastname?: string;
+  email?: string;
+  groups?: string;
+  enable?: number;
+  comment?: string;
+}
+
+export interface CreateGroupParams {
+  groupid: string;
+  comment?: string;
+}
+
+export async function createUser(client: ProxmoxClient, params: CreateUserParams): Promise<void> {
+  await client.post('/access/users', params as unknown as Record<string, unknown>);
+}
+
+export async function deleteUser(client: ProxmoxClient, userid: string): Promise<void> {
+  await client.delete(`/access/users/${encodeURIComponent(userid)}`);
+}
+
+export async function updateUser(client: ProxmoxClient, userid: string, params: Partial<Omit<CreateUserParams, 'userid'>>): Promise<void> {
+  await client.put(`/access/users/${encodeURIComponent(userid)}`, params);
+}
+
+export async function createGroup(client: ProxmoxClient, params: CreateGroupParams): Promise<void> {
+  await client.post('/access/groups', params as unknown as Record<string, unknown>);
+}
+
+export async function deleteGroup(client: ProxmoxClient, groupid: string): Promise<void> {
+  await client.delete(`/access/groups/${encodeURIComponent(groupid)}`);
+}
+
 export async function listUsers(client: ProxmoxClient): Promise<UserInfo[]> {
   return client.get<UserInfo[]>('/access/users');
 }

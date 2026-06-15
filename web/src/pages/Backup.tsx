@@ -3,11 +3,13 @@ import { getBackupJobs, deleteBackupJob, type BackupJob } from '@/api/client';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import CreateBackupJobDialog from '@/components/CreateBackupJobDialog';
 
 export default function Backup() {
   const [jobs, setJobs] = useState<BackupJob[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showCreate, setShowCreate] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -31,10 +33,17 @@ export default function Backup() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h2 className="text-xl font-semibold">Backup Jobs</h2>
-        <p className="text-sm text-muted-foreground">{jobs.length} scheduled job{jobs.length !== 1 ? 's' : ''}</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-semibold">Backup Jobs</h2>
+          <p className="text-sm text-muted-foreground">{jobs.length} scheduled job{jobs.length !== 1 ? 's' : ''}</p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => void load()}>Refresh</Button>
+          <Button size="sm" onClick={() => setShowCreate(true)}>Create Job</Button>
+        </div>
       </div>
+      <CreateBackupJobDialog open={showCreate} onClose={() => setShowCreate(false)} onSuccess={() => { setShowCreate(false); void load(); }} />
 
       {jobs.length === 0 ? (
         <p className="text-muted-foreground">No scheduled backup jobs.</p>

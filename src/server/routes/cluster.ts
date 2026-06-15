@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { Config } from '../../config/types';
-import { listClusterStatusService, listClusterResourcesService, listHAStatusService } from '../../services/cluster';
+import { listClusterStatusService, listClusterResourcesService, listHAStatusService, getNextVMIDService } from '../../services/cluster';
 
 export function clusterRouter(config: Config): Router {
   const router = Router();
@@ -20,6 +20,12 @@ export function clusterRouter(config: Config): Router {
 
   router.get('/ha', async (req: Request, res: Response) => {
     const result = await listHAStatusService(config, { profile: req.profileName });
+    if (!result.ok) { res.status(500).json({ ok: false, error: result.error }); return; }
+    res.json({ ok: true, data: result.data });
+  });
+
+  router.get('/nextid', async (req: Request, res: Response) => {
+    const result = await getNextVMIDService(config, { profile: req.profileName });
     if (!result.ok) { res.status(500).json({ ok: false, error: result.error }); return; }
     res.json({ ok: true, data: result.data });
   });

@@ -16,7 +16,7 @@ A safe, audited CLI for managing Proxmox VE from your terminal. Built with TypeS
 - **Protected resources** — config-driven list of VMs/nodes/containers that cannot be touched
 - **Flexible output** — `--format table|json|csv` on every listing command
 - **Polished CLI** — spinner during API calls, colored status, human-readable memory (GB), compact tables, summary line
-- **Full VM lifecycle** — start, stop, shutdown, reboot, suspend, resume, snapshots, config, delete (with double-confirm), live migration
+- **Full VM lifecycle** — create (CLI + API + Web UI), start, stop, shutdown, reboot, suspend, resume, snapshots, config, delete (with double-confirm), live migration, clone, resize
 - **Full LXC lifecycle** — same command set as VMs, plus `lxc exec` for running commands inside containers
 - **Node management** — list, status, version, services, tasks, shutdown/reboot with double-confirmation and affected-workload warning
 - **Storage management** — list pools, inspect status, list/upload/delete content (ISO, templates), list/delete backups

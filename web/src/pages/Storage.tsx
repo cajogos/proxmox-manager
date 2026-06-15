@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { getStorage, type StorageInfo } from '@/api/client';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import StorageUploadDialog from '@/components/StorageUploadDialog';
 
 function humanBytes(b?: number): string {
   if (b == null) return '-';
@@ -15,6 +17,7 @@ export default function Storage() {
   const [pools, setPools] = useState<StorageInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [uploadTarget, setUploadTarget] = useState<string | null>(null);
 
   useEffect(() => {
     void (async () => {
@@ -30,10 +33,20 @@ export default function Storage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h2 className="text-xl font-semibold">Storage</h2>
-        <p className="text-sm text-muted-foreground">{pools.length} pool(s)</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-semibold">Storage</h2>
+          <p className="text-sm text-muted-foreground">{pools.length} pool(s)</p>
+        </div>
       </div>
+      {uploadTarget && (
+        <StorageUploadDialog
+          open={true}
+          storage={uploadTarget}
+          onClose={() => setUploadTarget(null)}
+          onSuccess={() => setUploadTarget(null)}
+        />
+      )}
       <Table>
         <TableHeader>
           <TableRow>
@@ -43,6 +56,7 @@ export default function Storage() {
             <TableHead>Used</TableHead>
             <TableHead>Available</TableHead>
             <TableHead>Active</TableHead>
+            <TableHead></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -57,6 +71,9 @@ export default function Storage() {
                 {p.active
                   ? <Badge variant="success">active</Badge>
                   : <Badge variant="secondary">inactive</Badge>}
+              </TableCell>
+              <TableCell>
+                <Button size="sm" variant="outline" onClick={() => setUploadTarget(p.storage)}>Upload</Button>
               </TableCell>
             </TableRow>
           ))}

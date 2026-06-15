@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { getNodes, type NodeInfo } from '@/api/client';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -55,7 +56,7 @@ export default function Nodes() {
         <TableBody>
           {nodes.map(n => (
             <TableRow key={n.node}>
-              <TableCell className="font-medium">{n.node}</TableCell>
+              <TableCell className="font-medium"><Link to={`/nodes/${n.node}`} className="hover:underline">{n.node}</Link></TableCell>
               <TableCell>{statusBadge(n.status)}</TableCell>
               <TableCell>{n.cpu != null ? `${(n.cpu * 100).toFixed(1)}%` : '-'}</TableCell>
               <TableCell>

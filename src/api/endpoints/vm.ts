@@ -194,6 +194,39 @@ export async function migrateVM(
   });
 }
 
+export interface CreateVMParams {
+  vmid: number;
+  name?: string;
+  memory?: number;
+  cores?: number;
+  sockets?: number;
+  cpu?: string;
+  ostype?: string;
+  disk?: string;
+  iso?: string;
+  net?: string;
+  start?: boolean;
+}
+
+export async function createVM(
+  client: ProxmoxClient,
+  node: string,
+  params: CreateVMParams,
+): Promise<string> {
+  const body: Record<string, unknown> = { vmid: params.vmid };
+  if (params.name)    body['name']    = params.name;
+  if (params.memory)  body['memory']  = params.memory;
+  if (params.cores)   body['cores']   = params.cores;
+  if (params.sockets) body['sockets'] = params.sockets;
+  if (params.cpu)     body['cpu']     = params.cpu;
+  if (params.ostype)  body['ostype']  = params.ostype;
+  if (params.disk)    body['scsi0']   = params.disk;
+  if (params.iso)     body['ide2']    = `${params.iso},media=cdrom`;
+  if (params.net)     body['net0']    = params.net;
+  if (params.start)   body['start']   = 1;
+  return client.post<string>(`/nodes/${node}/qemu`, body);
+}
+
 interface AgentNetworkInterface {
   name: string;
   'ip-addresses'?: { 'ip-address': string; 'ip-address-type': 'ipv4' | 'ipv6'; prefix: number }[];

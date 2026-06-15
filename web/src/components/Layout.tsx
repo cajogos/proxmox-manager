@@ -8,6 +8,8 @@ const links = [
   { to: '/storage', label: 'Storage', end: false },
   { to: '/cluster', label: 'Cluster', end: false },
   { to: '/network', label: 'Network', end: false },
+  { to: '/firewall', label: 'Firewall', end: false },
+  { to: '/sdn', label: 'SDN', end: false },
   { to: '/access', label: 'Access', end: false },
   { to: '/backup', label: 'Backup', end: false },
   { to: '/documentation', label: 'Docs', end: false },
